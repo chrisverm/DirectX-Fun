@@ -2,20 +2,25 @@
 *.slo
 *.lo
 *.o
-*.obj
+*.asp
 
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
-*.lib
 
-# Executables
-*.exe
-*.out
-*.app
+# SQL/visual studio prefs crap
+*.sdf
+*.opensdf
+*.suo
+
+# Folders that most likely have build junk in them.
+DELETE
+[Dd]ebug
+[Rr]elease
+[Bb]in
+[Bb]inary
