@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// ResourceManager.cpp by Christopher Vermilya (C) 2014 All rights Reserved.
+// ResourceManager.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
+// last edited 5/02/2014
 // ---------------------------------------------------------------------------
 
 #include "ResourceManager.h"

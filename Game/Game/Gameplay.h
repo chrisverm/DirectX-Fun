@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Gameplay.h by Christopher Vermilya (C) 2014 All Rights Reserved.
+// last edited 5/02/2014
+// ---------------------------------------------------------------------------
+
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 

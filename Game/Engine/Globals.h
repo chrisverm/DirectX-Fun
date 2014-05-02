@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Globals.h by Christopher Vermilya (C) 2014 All Rights Reserved.
+// last edited 5/02/2014
+// ---------------------------------------------------------------------------
+
 #ifndef GLOBALS_H
 #define GLOBALS_H
 

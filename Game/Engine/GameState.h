@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// GameState.h by Christopher Vermilya (C) 2014 All rights Reserved.
+// GameState.h by Christopher Vermilya (C) 2014 All Rights Reserved.
+// last edited 5/02/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAME_STATE_H

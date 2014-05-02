@@ -1,6 +1,9 @@
-#include "Gameplay.h"
+// ---------------------------------------------------------------------------
+// Gameplay.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
+// last edited 5/02/2014
+// ---------------------------------------------------------------------------
 
-#include <iostream> // remove this
+#include "Gameplay.h"
 
 Gameplay::Gameplay(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	: GameState(device, deviceContext)
