@@ -113,7 +113,7 @@ bool ResourceManager::AddInputLayout(std::string id, ID3D11InputLayout* inputLay
 bool ResourceManager::AddShaderResourceView(std::string id, ID3D11ShaderResourceView* shaderResourceView)
 {
 	// check if shader resource view with this ID already exists
-	if (inputLayouts[id] != nullptr)
+	if (shaderResourceViews[id] != nullptr)
 	{
 		std::wstring wid = std::wstring(id.begin(), id.end());
 		std::wstring error = L"A shader resource view with the ID \"" + wid + L"\" already exists.";
@@ -137,7 +137,7 @@ bool ResourceManager::AddShaderResourceView(std::string id, ID3D11ShaderResource
 bool ResourceManager::AddSamplerState(std::string id, ID3D11SamplerState* samplerState)
 {
 	// check if sampler state with this ID already exists
-	if (inputLayouts[id] != nullptr)
+	if (samplerStates[id] != nullptr)
 	{
 		std::wstring wid = std::wstring(id.begin(), id.end());
 		std::wstring error = L"A sampler state with the ID \"" + wid + L"\" already exists.";
@@ -269,7 +269,7 @@ bool ResourceManager::CreateShaderResourceView(std::string id, std::wstring text
 bool ResourceManager::CreateSamplerState(std::string id, D3D11_SAMPLER_DESC samplerDesc)
 {
 	// check if sampler state with this ID already exists
-	if (shaderResourceViews[id] != nullptr)
+	if (samplerStates[id] != nullptr)
 	{
 		std::wstring wid = std::wstring(id.begin(), id.end());
 		std::wstring error = L"A sampler state with the ID \"" + wid + L"\" already exists.";
@@ -283,4 +283,6 @@ bool ResourceManager::CreateSamplerState(std::string id, D3D11_SAMPLER_DESC samp
 		&samplerDesc,
 		&ss));
 	AddSamplerState(id, ss);
+
+	return true;
 }

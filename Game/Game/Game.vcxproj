@@ -41,38 +41,51 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)DELETE\</OutDir>
     <IntDir>$(SolutionDir)DELETE\$(ProjectName)\$(Configuration)\</IntDir>
+    <LibraryPath>$(SolutionDir)\Engine\OpenAL\lib;$(SolutionDir)\Engine\oggvorbis\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)DELETE\</OutDir>
     <IntDir>$(SolutionDir)DELETE\$(ProjectName)\$(Configuration)\</IntDir>
+    <LibraryPath>$(SolutionDir)\Engine\OpenAL\lib;$(SolutionDir)\Engine\oggvorbis\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>
+      </Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)/Engine; $(SolutionDir)/DirectXTK/Inc</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IntrinsicFunctions />
+      <WholeProgramOptimization />
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(SolutionDir)Binary\"
-mkdir "$(SolutionDir)Binary\Resources\"
+      <Command>mkdir "$(SolutionDir)Binary\Resources\"
 mkdir "$(SolutionDir)Binary\Shaders\"
-copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)Binary"</Command>
+copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)Binary"
+copy "$(SolutionDir)$(ProjectName)\Resources\" "$(SolutionDir)Binary\Resources" /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Binary\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)/Engine; $(SolutionDir)/DirectXTK/Inc</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -80,11 +93,18 @@ copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)Binary"</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(SolutionDir)Binary\"
-mkdir "$(SolutionDir)Binary\Resources\"
+      <Command>mkdir "$(SolutionDir)Binary\Resources\"
 mkdir "$(SolutionDir)Binary\Shaders\"
-copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)Binary"</Command>
+copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)Binary"
+copy "$(SolutionDir)$(ProjectName)\Resources\" "$(SolutionDir)Binary\Resources" /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <FxCompile>
+      <ObjectFileOutput>$(SolutionDir)Binary\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConstantBuffers.h" />
@@ -116,6 +136,15 @@ copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)Binary"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ConstantBuffers.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\crate_obj.obj">
+      <FileType>Document</FileType>
+      <SubType>Designer</SubType>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\crate_texture.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

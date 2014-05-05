@@ -13,7 +13,13 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shaders">
+    <Filter Include="Resource Files\Objects">
+      <UniqueIdentifier>{4637cb0b-8a67-42f7-8dd1-58b8dfde0c2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{b8569209-381f-4500-bebf-14509482b22d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{9b349c3e-748d-4a32-9585-c9366242ae8f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -38,15 +44,25 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\VS_PNU.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\PS_PNU.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ConstantBuffers.hlsli">
-      <Filter>Shaders</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\crate_texture.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\crate_obj.obj">
+      <Filter>Resource Files\Objects</Filter>
+    </Text>
   </ItemGroup>
 </Project>

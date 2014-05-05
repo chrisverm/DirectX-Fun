@@ -9,6 +9,8 @@
 #include "GameState.h"
 #include "GameStateManager.h"
 #include "Game.h"
+#include "Mesh.h"
+#include "Material.h"
 
 class Gameplay : public GameState
 {
@@ -20,6 +22,8 @@ public:
 	void Draw(float dt);
 
 private:
+	Mesh* mesh;
+	Material* material;
 
 };
 

@@ -6,6 +6,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <string>
+#include <sstream>
 #include "DX.h"
 #include "Globals.h"
 #include "ConstantBuffers.h"
@@ -35,6 +37,9 @@ protected:
 	static PerModelData* perModelData;
 
 	static bool projChanged;
+
+private:
+	static void CalculateFrameStats();
 
 };
 
