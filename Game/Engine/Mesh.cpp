@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Mesh.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/02/2014
+// last edited 5/05/2014
 // ---------------------------------------------------------------------------
 
 #include "Mesh.h"
@@ -82,14 +82,14 @@ void Mesh::SetBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 }
 
-Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat = "v/vt/vn/vc")
+Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 {
-	std::string data = "";
-	std::string line = "";
+	std::string fileData = "";
+	std::string currLine = "";
 
 	std::ifstream file;
 	file.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-	int numLine = 0;
+	int lineNum = 0;
 
 	// read OBJ fine in as text
 	try
@@ -98,9 +98,9 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat = "v/vt/
 
 		while (!file.eof())
 		{
-			std::getline(file, line);
-			data += line + '\n';
-			numLine++;
+			std::getline(file, currLine);
+			fileData += currLine + '\n';
+			lineNum++;
 		}
 
 		file.close();
@@ -108,109 +108,67 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat = "v/vt/
 	catch (std::ifstream::failure e)
 	{
 		std::wstring wpath = std::wstring(objFilePath.begin(), objFilePath.end());
-		std::wstring error = L"Cannot read OBJ from path \"" + wpath + L"\". Stopped at line " + std::to_wstring(numLine);
+		std::wstring error = L"Cannot read OBJ from path \"" + wpath + L"\". Stopped at line " + std::to_wstring(lineNum);
 		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
 		file.close();
 	}
 
 	// remove all comments from file before reading data
-	while (std::count(data.begin(), data.end(), '#') > 0)
+	while (std::count(fileData.begin(), fileData.end(), '#') > 0)
 	{
-		int comment = data.find_first_of('#');
+		int comment = fileData.find_first_of('#');
 
-		while (comment != 0 && data[comment - 1] == ' ')
+		while (comment != 0 && fileData[comment - 1] == ' ')
 			comment--;
 
-		while (data[comment] != '\n')
-			data.erase(comment, 1);
+		while (fileData[comment] != '\n')
+			fileData.erase(comment, 1);
 	}
 
 	// remove all blank lines from file before reading data
-	while (data.find("\n\n") != std::string::npos)
+	while (fileData.find("\n\n") != std::string::npos)
 	{
-		data = data.erase(data.find("\n\n"), 1);
+		fileData = fileData.erase(fileData.find("\n\n"), 1);
 	}
 
-	int numLines = std::count(data.begin(), data.end(), '\n');
+	int numLines = std::count(fileData.begin(), fileData.end(), '\n');
 
-	for (int i = 0; i < numLines; i++)
-	{
-
-	}
-
-	std::map<std::string, std::vector<void*>> objMap;
+	std::map<std::string, std::vector<void*>> objInfo;
 	std::string* split = nullptr;
-	std::string id = "", xmfloat = "";
+	int numDelims = 0;
 
-	while (data.length() > 0)
+	while (fileData.length() > 0)
 	{
-		split = nullptr;
-		line = data.substr(0, data.find_first_of('\n'));
-		id   = line.substr(0, data.find_first_of(' '));
-		data = data.substr(line.length() + 1, data.length());
+		currLine = fileData.substr(0, fileData.find_first_of('\n'));
+		split	 = Split(currLine, ' ', &numDelims);
+		fileData = fileData.substr(currLine.length() + 1, fileData.length());
 
-		
-
-		if (id == "f")
+		if (split[0] == "f")
 		{
-			
+			objInfo["f"].push_back(new std::string(split[1]));
 		}
 		else
 		{
-			xmfloat = line.substr(id.length(), line.length());
-			std::string* xmfloatArr = Split(xmfloat.substr(1, xmfloat.length()), ' ');
+			float* data = new float[numDelims];
 
-			int numData = std::count(xmfloat.begin(), xmfloat.end(), ' ');
-			float* floatData = new float[numData]; //malloc(sizeof(float) * numData);
-
-			for (int i = 0; i < numData; i++)
+			for (int i = 0; i < numDelims; i++)
 			{
-				floatData[i] = atof(xmfloatArr[i].c_str());
+				data[i] = atof(split[i + 1].c_str());
 			}
 
-			objMap[id].push_back(floatData);
-
-			/*
-			if (std::count(xmfloat.begin(), xmfloat.end(), ' ') + 1 == 2)
-			{
-				std::string* xmfloatArr = Split(xmfloat.substr(1, xmfloat.length()), ' ');
-				objMap[id].push_back(new XMFLOAT2(
-					atof(xmfloatArr[0].c_str()),
-					atof(xmfloatArr[1].c_str())
-					));
-			}
-			if (std::count(xmfloat.begin(), xmfloat.end(), ' ') + 1 == 3)
-			{
-				std::string* xmfloatArr = Split(xmfloat.substr(1, xmfloat.length()), ' ');
-				objMap[id].push_back(new XMFLOAT3(
-					atof(xmfloatArr[0].c_str()),
-					atof(xmfloatArr[1].c_str()), 
-					atof(xmfloatArr[2].c_str())
-					));
-			}
-			if (std::count(xmfloat.begin(), xmfloat.end(), ' ') + 1 == 4)
-			{
-				std::string* xmfloatArr = Split(xmfloat.substr(1, xmfloat.length()), ' ');
-				objMap[id].push_back(new XMFLOAT4(
-					atof(xmfloatArr[0].c_str()),
-					atof(xmfloatArr[1].c_str()), 
-					atof(xmfloatArr[2].c_str()),
-					atof(xmfloatArr[3].c_str())
-					));
-			}
-			*/
+			objInfo[split[0]].push_back(data);
 		}
 	}
 
-	float v1  = *(float*)objMap["v"][1];
-	float vn1 = *(float*)objMap["vn"][1];
-	float vt1 = *(float*)objMap["vt"][1];
-	float vc1 = *(float*)objMap["vc"][0];
-	
-	void* stuff = malloc(sizeof(float) * 10);
-	float num1 = 1.0f, num2 = 2.0f;
-	memcpy((BYTE*)stuff + 0, &num1, sizeof(float));
-	memcpy((BYTE*)stuff + 4, &num2, sizeof(float));
+	for (int i = 0; i < objInfo["f"].size(); i++)
+	{
+		// use faceFormat to determine order of data to include
+	}
+
+	/*float v1  = *(float*)objInfo["v"][7];
+	float vn1 = *(float*)objInfo["vn"][5];
+	float vt1 = *(float*)objInfo["vt"][3];
+	float vc1 = *(float*)objInfo["vc"][0];*/
 
 	return nullptr;
 }

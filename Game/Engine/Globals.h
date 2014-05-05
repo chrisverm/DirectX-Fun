@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Globals.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/02/2014
+// last edited 5/05/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GLOBALS_H
@@ -33,10 +33,11 @@
 	#endif
 #endif
 
-static std::string* Split(std::string s, char delimeter)
+static std::string* Split(std::string s, char delimeter, int* delimCount = nullptr)
 {
-	int delimCount = std::count(s.begin(), s.end(), delimeter);
-	std::string* splitString = new std::string[delimCount + 1];
+	if (delimCount == nullptr) delimCount = new int();
+	*delimCount = std::count(s.begin(), s.end(), delimeter);
+	std::string* splitString = new std::string[*delimCount + 1];
 	int index = 0;
 
 	for (std::size_t i = 0; i < s.length(); i++)
