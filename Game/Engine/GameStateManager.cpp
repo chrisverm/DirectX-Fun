@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // GameStateManager.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/02/2014
+// last edited 5/06/2014
 // ---------------------------------------------------------------------------
 
 #include "GameStateManager.h"
@@ -13,6 +13,8 @@ void GameStateManager::Release()
 {
 	for (StateMap::iterator it = states.begin(); it != states.end(); it++)
 	{ delete it->second; }
+
+	ResourceManager::Release();
 }
 
 bool GameStateManager::AddState(std::string id, GameState* state)

@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Mesh.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/05/2014
+// last edited 5/06/2014
 // ---------------------------------------------------------------------------
 
 #include "Mesh.h"
@@ -136,6 +136,7 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 	std::map<std::string, std::vector<void*>> objInfo;
 	std::string* split = nullptr;
 	int numDelims = 0;
+	int vertsPerFace = 0;
 
 	while (fileData.length() > 0)
 	{
@@ -145,7 +146,9 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 
 		if (split[0] == "f")
 		{
-			objInfo["f"].push_back(new std::string(split[1]));
+			if (vertsPerFace == 0) vertsPerFace = std::count(currLine.begin(), currLine.end(), ' ');
+
+			objInfo["f"].push_back(new std::string(currLine.begin() + split[0].length() + 1, currLine.end()));
 		}
 		else
 		{
@@ -158,17 +161,96 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 
 			objInfo[split[0]].push_back(data);
 		}
-	}
 
-	for (int i = 0; i < objInfo["f"].size(); i++)
+		delete[] split;
+		split = nullptr;
+	}
+	
+	int numFaces = objInfo["f"].size();
+	int numFaceElements = 0;
+	int vertexFloatSize = 0; // RENAME THIS
+	std::string* formatSplit = Split(faceFormat, '/', &numFaceElements);
+	numFaceElements += 1;
+
+	for (int i = 0; i < numFaceElements; i++)
 	{
-		// use faceFormat to determine order of data to include
+		vertexFloatSize += atoi(formatSplit[i].substr(0, 1).c_str());	// WONT WORK FOR NUMBERS OVER 9
 	}
 
-	/*float v1  = *(float*)objInfo["v"][7];
-	float vn1 = *(float*)objInfo["vn"][5];
-	float vt1 = *(float*)objInfo["vt"][3];
-	float vc1 = *(float*)objInfo["vc"][0];*/
+	size_t vertexBytes = sizeof(float) * vertexFloatSize;
+	float* vertices = new float[vertexFloatSize * vertsPerFace * numFaces];
+
+	int index = 0;
+	for (int fIndex = 0; fIndex < objInfo["f"].size(); fIndex++) // which face
+	{
+		std::string face = *((std::string*)objInfo["f"][fIndex]);
+		std::string* faceSplit = Split(face, ' ');
+
+		for (int fVertex = 0; fVertex < vertsPerFace; fVertex++) // which vertex in that face
+		{
+			std::string* elemSplit = Split(faceSplit[fVertex], '/');
+
+			for (int vElement = 0; vElement < numFaceElements; vElement++) // which element in that vertex
+			{
+				int ind = atoi(elemSplit[vElement].c_str());
+
+				for (int eIndex = 0; eIndex < atoi(formatSplit[vElement].c_str()); eIndex++) // which float in that element
+				{
+					std::string id = formatSplit[vElement].substr(1, formatSplit[vElement].length());
+
+					vertices[index] = ((float*)objInfo[id][ind - 1])[eIndex];
+
+					index++;
+				}
+			}
+
+			delete[] elemSplit;
+			elemSplit = nullptr;
+		}
+
+		delete[] faceSplit;
+		faceSplit = nullptr;
+	}
+
+	delete[] formatSplit;
+	formatSplit = nullptr;
+
+	//Vertex* verts = (Vertex*)vertices;
+
+	// BELOW HERE IS PLACEHOLDER, HARDCODED TO REMOVE ALL MEMORY LEAKS
+	delete[] vertices;
+	vertices = nullptr;
+
+	std::vector<void*>* fList = &objInfo["f"];
+	std::vector<void*>* vList = &objInfo["v"];
+	std::vector<void*>* vnList = &objInfo["vn"];
+	std::vector<void*>* vtList = &objInfo["vt"];
+	std::vector<void*>* vcList = &objInfo["vc"];
+	for (size_t i = 0; i < fList->size(); i++)
+	{
+		delete (std::string*)(*fList)[i];
+		(*fList)[i] = nullptr;
+	}
+	for (size_t i = 0; i < vList->size(); i++)
+	{
+		delete[] (float*)(*vList)[i];
+		(*vList)[i] = nullptr;
+	}
+	for (size_t i = 0; i < vnList->size(); i++)
+	{
+		delete[] (float*)(*vnList)[i];
+		(*vnList)[i] = nullptr;
+	}
+	for (size_t i = 0; i < vtList->size(); i++)
+	{
+		delete[] (float*)(*vtList)[i];
+		(*vtList)[i] = nullptr;
+	}
+	for (size_t i = 0; i < vcList->size(); i++)
+	{
+		delete[] (float*)(*vcList)[i];
+		(*vcList)[i] = nullptr;
+	}
 
 	return nullptr;
 }

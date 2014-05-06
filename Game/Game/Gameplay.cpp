@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/04/2014
+// last edited 5/06/2014
 // ---------------------------------------------------------------------------
 
 #include "Gameplay.h"
@@ -29,8 +29,8 @@ bool Gameplay::Initialize()
 		vertex_PNU_Desc, ARRAYSIZE(vertex_PNU_Desc));
 	Resources::CreatePixelShader("PNU", L"Shaders/PS_PNU.cso");
 
-	mesh = Mesh::LoadFromOBJ("Resources/crate_obj.obj");
-	mesh->Initialize(device, Resources::GetInputLayout("PNU"), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	/*mesh = */Mesh::LoadFromOBJ("Resources/crate_obj.obj");
+	//mesh->Initialize(device, Resources::GetInputLayout("PNU"), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return true;
 }
