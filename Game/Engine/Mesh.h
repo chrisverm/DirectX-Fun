@@ -24,6 +24,9 @@ public:
 
 	static Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat = "v/vt/vn/vc");
 
+	const UINT& NumVertices;
+	const UINT& NumIndices;
+
 private:
 	UINT numVerts, numInds;
 	size_t vertexBytes;

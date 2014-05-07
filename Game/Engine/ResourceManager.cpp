@@ -16,21 +16,21 @@ SSMap  ResourceManager::samplerStates;
 
 void ResourceManager::Release()
 {
-	for (VSMap::iterator it = vertexShaders.begin(); it != vertexShaders.end(); it++)
-	{ ReleaseMacro(it->second); }
+	for (VSMap::iterator it = vertexShaders.begin(); it != vertexShaders.end(); it = vertexShaders.begin())
+	{ ReleaseMacro(it->second); vertexShaders.erase(it->first); }
 
-	for (PSMap::iterator it = pixelShaders.begin(); it != pixelShaders.end(); it++)
-	{ ReleaseMacro(it->second); }
+	for (PSMap::iterator it = pixelShaders.begin(); it != pixelShaders.end(); it = pixelShaders.begin())
+	{ ReleaseMacro(it->second); pixelShaders.erase(it->first); }
 
-	for (ILMap::iterator it = inputLayouts.begin(); it != inputLayouts.end(); it++)
-	{ ReleaseMacro(it->second); }
+	for (ILMap::iterator it = inputLayouts.begin(); it != inputLayouts.end(); it = inputLayouts.begin())
+	{ ReleaseMacro(it->second); inputLayouts.erase(it->first); }
 
-	for (SRVMap::iterator it = shaderResourceViews.begin(); it != shaderResourceViews.end(); it++)
-	{ ReleaseMacro(it->second); }
+	for (SRVMap::iterator it = shaderResourceViews.begin(); it != shaderResourceViews.end(); it = shaderResourceViews.begin())
+	{ ReleaseMacro(it->second); shaderResourceViews.erase(it->first); }
 
-	for (SSMap::iterator it = samplerStates.begin(); it != samplerStates.end(); it++)
-	{ ReleaseMacro(it->second); }
-};
+	for (SSMap::iterator it = samplerStates.begin(); it != samplerStates.end(); it = samplerStates.begin())
+	{ ReleaseMacro(it->second); samplerStates.erase(it->first); }
+}
 
 void ResourceManager::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {

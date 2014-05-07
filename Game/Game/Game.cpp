@@ -35,8 +35,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
 ID3D11Buffer* Game::perFrameConstBuffer = nullptr;
 ID3D11Buffer* Game::perModelConstBuffer = nullptr;
-PerFrameData* Game::perFrameData = nullptr;
-PerModelData* Game::perModelData = nullptr;
+PerFrameData* Game::perFrameData = new PerFrameData();
+PerModelData* Game::perModelData = new PerModelData();
 bool Game::projChanged = false;
 
 bool Game::Initialize(HINSTANCE hInstance, int icon)

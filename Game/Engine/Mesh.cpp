@@ -6,10 +6,11 @@
 #include "Mesh.h"
 
 Mesh::Mesh(void* verts, size_t vBytes, UINT vSize, UINT inds[], UINT iSize)
+	: NumVertices(numVerts), NumIndices(numInds)
 {
 	vertices = verts;
 	vertexBytes = vBytes;
-	numVerts = iSize;
+	numVerts = vSize;
 	indices = inds;
 	numInds = iSize;
 }
@@ -76,8 +77,8 @@ void Mesh::SetBuffers(ID3D11DeviceContext* deviceContext)
 	UINT stride = vertexBytes;
 	UINT offset = 0;
 
-	deviceContext->IASetPrimitiveTopology(topology);
 	deviceContext->IASetInputLayout(inputLayout);
+	deviceContext->IASetPrimitiveTopology(topology);
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 }
@@ -156,7 +157,7 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 
 			for (int i = 0; i < numDelims; i++)
 			{
-				data[i] = atof(split[i + 1].c_str());
+				data[i] = (float)atof(split[i + 1].c_str());
 			}
 
 			objInfo[split[0]].push_back(data);
@@ -181,7 +182,7 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 	float* vertices = new float[vertexFloatSize * vertsPerFace * numFaces];
 
 	int index = 0;
-	for (int fIndex = 0; fIndex < objInfo["f"].size(); fIndex++) // which face
+	for (int fIndex = 0; fIndex < (int)objInfo["f"].size(); fIndex++) // which face
 	{
 		std::string face = *((std::string*)objInfo["f"][fIndex]);
 		std::string* faceSplit = Split(face, ' ');
