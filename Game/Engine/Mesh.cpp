@@ -5,14 +5,17 @@
 
 #include "Mesh.h"
 
-Mesh::Mesh(void* verts, size_t vBytes, UINT vSize, UINT inds[], UINT iSize)
-	: NumVertices(numVerts), NumIndices(numInds)
+Mesh::Mesh(MeshDesc* desc)
+	: NumVertices(numVerts), NumIndices(numInds), ILName(desc->ILName)
 {
-	vertices = verts;
-	vertexBytes = vBytes;
-	numVerts = vSize;
-	indices = inds;
-	numInds = iSize;
+	this->numVerts		= desc->NumVerts;
+	this->vertexBytes	= desc->VertexBytes;
+	this->numInds		= desc->NumInds;
+	this->vertices		= desc->Vertices;
+	this->indices		= desc->Indices;
+	this->topology		= desc->Topology;
+
+	/* currently not doing anything with vertexDesc & numSemantics in desc */
 }
 
 Mesh::~Mesh()
@@ -42,10 +45,9 @@ Mesh::~Mesh()
 	}
 }
 
-void Mesh::Initialize(ID3D11Device* device, ID3D11InputLayout* inputLayout, D3D_PRIMITIVE_TOPOLOGY topology)
+void Mesh::Initialize(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 {
 	this->inputLayout = inputLayout;
-	this->topology = topology;
 
 	// Create the vertex buffer
 	D3D11_BUFFER_DESC vbd;
@@ -126,38 +128,59 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 			fileData.erase(comment, 1);
 	}
 
-	// remove all blank lines from file before reading data
+	// remove all unnecessary whitespace from file before reading data
 	while (fileData.find("\n\n") != std::string::npos)
 	{
 		fileData = fileData.erase(fileData.find("\n\n"), 1);
 	}
+	while (fileData.find(" \n") != std::string::npos)
+	{
+		fileData = fileData.erase(fileData.find(" \n"), 1);
+	}
+	while (fileData.find("\n ") != std::string::npos)
+	{
+		fileData = fileData.erase(fileData.find("\n ") + 1, 1);
+	}
 
 	int numLines = std::count(fileData.begin(), fileData.end(), '\n');
 
-	std::map<std::string, std::vector<void*>> objInfo;
+	enum Topology
+	{
+		NONE = 0,
+		POINT = 1,
+		LINE = 2,
+		TRIANGLE = 3,
+		QUAD = 4
+	};
+
+	std::map<std::string, std::vector<float*>> objInfo;
+	std::vector<std::string> faces = std::vector<std::string>(); // COULD INCLUDE START SIZE FOR BETTER EFFICIENCY
+	Topology topology = NONE;
 	std::string* split = nullptr;
-	int numDelims = 0;
-	int vertsPerFace = 0;
+	UINT currLineFloatCount = 0;
 
 	while (fileData.length() > 0)
 	{
 		currLine = fileData.substr(0, fileData.find_first_of('\n'));
-		split	 = Split(currLine, ' ', &numDelims);
 		fileData = fileData.substr(currLine.length() + 1, fileData.length());
+		split	 = Split(currLine, ' ', &currLineFloatCount);
 
 		if (split[0] == "f")
 		{
-			if (vertsPerFace == 0) vertsPerFace = std::count(currLine.begin(), currLine.end(), ' ');
+			if (topology == NONE)
+			{
+				topology = (Topology)std::count(currLine.begin(), currLine.end(), ' ');
+			}
 
-			objInfo["f"].push_back(new std::string(currLine.begin() + split[0].length() + 1, currLine.end()));
+			faces.push_back(currLine.erase(0, split[0].length() + 1));
 		}
 		else
 		{
-			float* data = new float[numDelims];
+			float* data = new float[currLineFloatCount];
 
-			for (int i = 0; i < numDelims; i++)
+			for (UINT i = 0; i < currLineFloatCount; i++)
 			{
-				data[i] = (float)atof(split[i + 1].c_str());
+				data[i] = (float)atof(split[1 + i].c_str());
 			}
 
 			objInfo[split[0]].push_back(data);
@@ -166,40 +189,46 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 		delete[] split;
 		split = nullptr;
 	}
-	
-	int numFaces = objInfo["f"].size();
-	int numFaceElements = 0;
-	int vertexFloatSize = 0; // RENAME THIS
-	std::string* formatSplit = Split(faceFormat, '/', &numFaceElements);
-	numFaceElements += 1;
 
-	for (int i = 0; i < numFaceElements; i++)
+	UINT faceCount = faces.size();
+	UINT numFaceElements = 1;
+	std::string* formatSplit = Split(faceFormat, '/', &numFaceElements);
+
+	UINT vertexFloatCount = 0;
+	for (UINT i = 0; i < numFaceElements; i++)
 	{
-		vertexFloatSize += atoi(formatSplit[i].substr(0, 1).c_str());	// WONT WORK FOR NUMBERS OVER 9
+		std::string val = formatSplit[i].substr(0, formatSplit[i].find_first_not_of("0123456789"));
+		vertexFloatCount += (UINT)atoi(val.c_str());
 	}
 
-	size_t vertexBytes = sizeof(float) * vertexFloatSize;
-	float* vertices = new float[vertexFloatSize * vertsPerFace * numFaces];
+	MeshDesc desc;
+	desc.NumVerts = faceCount * topology;
+	desc.NumInds = faceCount * topology;;
+	desc.VertexBytes = vertexFloatCount * sizeof(float);
+	desc.Vertices = new float[desc.VertexBytes * topology * faceCount];
 
-	int index = 0;
-	for (int fIndex = 0; fIndex < (int)objInfo["f"].size(); fIndex++) // which face
+	UINT index = 0;
+	for (UINT faceIndex = 0; faceIndex < faceCount; faceIndex++)
 	{
-		std::string face = *((std::string*)objInfo["f"][fIndex]);
-		std::string* faceSplit = Split(face, ' ');
+		std::string currFace = faces[faceIndex];
+		std::string* faceSplit = Split(currFace, ' ');
 
-		for (int fVertex = 0; fVertex < vertsPerFace; fVertex++) // which vertex in that face
+		for (UINT vertIndex = 0; vertIndex < (UINT)topology; vertIndex++)
 		{
-			std::string* elemSplit = Split(faceSplit[fVertex], '/');
+			std::string* elemSplit = Split(faceSplit[vertIndex], '/');
 
-			for (int vElement = 0; vElement < numFaceElements; vElement++) // which element in that vertex
+			for (UINT elemIndex = 0; elemIndex < numFaceElements; elemIndex++)
 			{
-				int ind = atoi(elemSplit[vElement].c_str());
+				UINT element = (UINT)atoi(elemSplit[elemIndex].c_str()) - 1;
+				UINT numElems = (UINT)atoi(formatSplit[elemIndex].c_str());
 
-				for (int eIndex = 0; eIndex < atoi(formatSplit[vElement].c_str()); eIndex++) // which float in that element
+				for (UINT floatIndex = 0; floatIndex < numElems; floatIndex++)
 				{
-					std::string id = formatSplit[vElement].substr(1, formatSplit[vElement].length());
+					std::string id = formatSplit[elemIndex].substr(
+						formatSplit[floatIndex].find_first_not_of("0123456789"), 
+						formatSplit[elemIndex].length());
 
-					vertices[index] = ((float*)objInfo[id][ind - 1])[eIndex];
+					desc.Vertices[index] = ((float*)objInfo[id][element])[floatIndex];
 
 					index++;
 				}
@@ -212,46 +241,45 @@ Mesh* Mesh::LoadFromOBJ(std::string objFilePath, std::string faceFormat)
 		delete[] faceSplit;
 		faceSplit = nullptr;
 	}
+	
+	/*struct Vertex
+	{
+		XMFLOAT3 Position;
+		XMFLOAT3 Normal;
+		XMFLOAT2 UV;
+	};
 
+	Vertex* verts = (Vertex*)vertices;*/
+	
 	delete[] formatSplit;
 	formatSplit = nullptr;
 
-	//Vertex* verts = (Vertex*)vertices;
-
-	// BELOW HERE IS PLACEHOLDER, HARDCODED TO REMOVE ALL MEMORY LEAKS
-	delete[] vertices;
-	vertices = nullptr;
-
-	std::vector<void*>* fList = &objInfo["f"];
-	std::vector<void*>* vList = &objInfo["v"];
-	std::vector<void*>* vnList = &objInfo["vn"];
-	std::vector<void*>* vtList = &objInfo["vt"];
-	std::vector<void*>* vcList = &objInfo["vc"];
-	for (size_t i = 0; i < fList->size(); i++)
+	// release stored data memory in objInfo map
+	std::map<std::string, std::vector<float*>>::iterator it;
+	for (it = objInfo.begin(); it != objInfo.end(); it++)
 	{
-		delete (std::string*)(*fList)[i];
-		(*fList)[i] = nullptr;
-	}
-	for (size_t i = 0; i < vList->size(); i++)
-	{
-		delete[] (float*)(*vList)[i];
-		(*vList)[i] = nullptr;
-	}
-	for (size_t i = 0; i < vnList->size(); i++)
-	{
-		delete[] (float*)(*vnList)[i];
-		(*vnList)[i] = nullptr;
-	}
-	for (size_t i = 0; i < vtList->size(); i++)
-	{
-		delete[] (float*)(*vtList)[i];
-		(*vtList)[i] = nullptr;
-	}
-	for (size_t i = 0; i < vcList->size(); i++)
-	{
-		delete[] (float*)(*vcList)[i];
-		(*vcList)[i] = nullptr;
+		for (size_t i = 0; i < it->second.size(); i++)
+		{
+			delete it->second[i];
+			it->second[i] = nullptr;
+		}
 	}
 
-	return nullptr;
+	desc.Indices = new UINT[desc.NumInds];
+	for (UINT i = 0; i < desc.NumInds; i++)
+	{ desc.Indices[i] = i; }
+
+	switch (topology)
+	{
+	case POINT:		desc.Topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;		break;
+	case LINE:		desc.Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;		break;
+	case TRIANGLE:	desc.Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;	break;
+	default: DXTRACE_ERR_MSGBOX(L"Problem getting mesh topology.", NULL);	break;
+	}
+
+	desc.VertexDesc = nullptr;
+	desc.NumSemantics = 0;
+	desc.ILName = "";
+	
+	return new Mesh(&desc);
 }

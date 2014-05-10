@@ -136,6 +136,7 @@ copy "$(SolutionDir)$(ProjectName)\Resources\" "$(SolutionDir)Binary\Resources" 
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ConstantBuffers.hlsli" />
+    <None Include="Shaders\Lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\crate_obj.obj">

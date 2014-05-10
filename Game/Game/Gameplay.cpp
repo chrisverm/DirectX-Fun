@@ -73,13 +73,13 @@ bool Gameplay::Initialize()
 	/* Sampler States */
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+	samplerDesc.Filter	 = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	Resources::CreateSamplerState("MIN_MAG_POINT_MIP_LINEAR", samplerDesc);
 
-	struct Vertex
+	/*struct Vertex
 	{
 		XMFLOAT3 Position;
 		XMFLOAT3 Normal;
@@ -105,13 +105,13 @@ bool Gameplay::Initialize()
 	{ indices[i] = indData[i]; }
 
 	mesh = new Mesh(vertices, sizeof(Vertex), ARRAYSIZE(vertData), indices, ARRAYSIZE(indData));
-	mesh->Initialize(device, Resources::GetInputLayout("PNU"), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mesh->Initialize(device, Resources::GetInputLayout("PNU"), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
 
 	material = new Material(Resources::GetVertexShader("PNU"), Resources::GetPixelShader("PNU"));
 	material->SetTexture(Resources::GetShaderResourceView("Crate"), Resources::GetSamplerState("MIN_MAG_POINT_MIP_LINEAR"));
 
-	/*mesh = Mesh::LoadFromOBJ("Resources/crate_obj.obj");
-	mesh->Initialize(device, Resources::GetInputLayout("PNU"), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
+	mesh = Mesh::LoadFromOBJ("Resources/crate_obj.obj", "3v/3vn/2vt");
+	mesh->Initialize(device, Resources::GetInputLayout("PNU"));
 
 	return true;
 }
@@ -120,10 +120,8 @@ void Gameplay::Update(float dt)
 {
 	XMFLOAT4X4 worldMatrix, viewMatrix, projMatrix;
 
-	XMMATRIX W = XMMatrixIdentity();
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
-
-	XMVECTOR position	= XMVectorSet(0, 0, -5, 0);
+	/* Per frame constant buffer data */
+	XMVECTOR position	= XMVectorSet(1, 1, -5, 0);
 	XMVECTOR target		= XMVectorSet(0, 0, 0, 0);
 	XMVECTOR up			= XMVectorSet(0, 1, 0, 0);
 	XMMATRIX V			= XMMatrixLookAtLH(position, target, up);
@@ -138,7 +136,6 @@ void Gameplay::Update(float dt)
 
 	Game::perFrameData->view = viewMatrix;
 	Game::perFrameData->projection = projMatrix;
-	Game::perModelData->model = worldMatrix;
 
 	deviceContext->UpdateSubresource(
 		Game::perFrameConstBuffer,
@@ -147,6 +144,12 @@ void Gameplay::Update(float dt)
 		Game::perFrameData,
 		0,
 		0);
+
+	/* Per model constant buffer data */
+	XMMATRIX W = XMMatrixIdentity();
+	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
+
+	Game::perModelData->model = worldMatrix;
 
 	deviceContext->UpdateSubresource(
 		Game::perModelConstBuffer,

@@ -7,6 +7,7 @@
 #define GLOBALS_H
 
 #include <string>
+#include <cctype>
 #include <DirectXMath.h>
 #include "dxerr.h"
 
@@ -33,12 +34,12 @@
 	#endif
 #endif
 
-static std::string* Split(std::string s, char delimeter, int* delimCount = nullptr)
+static std::string* Split(std::string s, char delimeter, UINT* delimCount = nullptr)
 {
 	bool delimCountOut = (delimCount != nullptr);
-	if (!delimCountOut) delimCount = new int();
+	if (!delimCountOut) delimCount = new UINT();
 
-	*delimCount = std::count(s.begin(), s.end(), delimeter);
+	*delimCount += std::count(s.begin(), s.end(), delimeter);
 	std::string* splitString = new std::string[*delimCount + 1];
 	int index = 0;
 
@@ -58,5 +59,17 @@ static std::string* Split(std::string s, char delimeter, int* delimCount = nullp
 
 	return splitString;
 };
+
+static std::string ToUpper(const std::string str)
+{
+	std::string result = "";
+
+	for (std::string::size_type i = 0; i < str.length(); i++)
+	{
+		result += std::toupper(str[i]);
+	}
+	
+	return result;
+}
 
 #endif

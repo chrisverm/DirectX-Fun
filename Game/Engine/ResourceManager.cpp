@@ -40,6 +40,9 @@ void ResourceManager::Initialize(ID3D11Device* device, ID3D11DeviceContext* devi
 
 bool ResourceManager::AddVertexShader(std::string id, ID3D11VertexShader* vertexShader)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if vertex shader with this ID already exists
 	if (vertexShaders[id] != nullptr)
 	{
@@ -64,6 +67,9 @@ bool ResourceManager::AddVertexShader(std::string id, ID3D11VertexShader* vertex
 
 bool ResourceManager::AddPixelShader(std::string id, ID3D11PixelShader* pixelShader)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if pixel shader with this ID already exists
 	if (pixelShaders[id] != nullptr)
 	{
@@ -88,6 +94,9 @@ bool ResourceManager::AddPixelShader(std::string id, ID3D11PixelShader* pixelSha
 
 bool ResourceManager::AddInputLayout(std::string id, ID3D11InputLayout* inputLayout)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if input layout with this ID already exists
 	if (inputLayouts[id] != nullptr)
 	{
@@ -112,6 +121,9 @@ bool ResourceManager::AddInputLayout(std::string id, ID3D11InputLayout* inputLay
 
 bool ResourceManager::AddShaderResourceView(std::string id, ID3D11ShaderResourceView* shaderResourceView)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if shader resource view with this ID already exists
 	if (shaderResourceViews[id] != nullptr)
 	{
@@ -136,6 +148,9 @@ bool ResourceManager::AddShaderResourceView(std::string id, ID3D11ShaderResource
 
 bool ResourceManager::AddSamplerState(std::string id, ID3D11SamplerState* samplerState)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if sampler state with this ID already exists
 	if (samplerStates[id] != nullptr)
 	{
@@ -161,6 +176,9 @@ bool ResourceManager::AddSamplerState(std::string id, ID3D11SamplerState* sample
 bool ResourceManager::CreateVertexShaderAndInputLayout(std::string id, std::wstring filepath, 
 			D3D11_INPUT_ELEMENT_DESC layoutDesc[], UINT numElements)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if vertex shader with this ID already exists
 	if (vertexShaders[id] != nullptr)
 	{
@@ -196,6 +214,9 @@ bool ResourceManager::CreateVertexShaderAndInputLayout(std::string id, std::wstr
 
 bool ResourceManager::CreatePixelShader(std::string id, std::wstring filepath)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if pixel shader with this ID already exists
 	if (pixelShaders[id] != nullptr)
 	{
@@ -244,6 +265,9 @@ bool ResourceManager::CreatePixelShader(std::string id, std::wstring filepath)
 
 bool ResourceManager::CreateShaderResourceView(std::string id, std::wstring textureFilePath)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if shader resource view with this ID already exists
 	if (shaderResourceViews[id] != nullptr)
 	{
@@ -268,6 +292,9 @@ bool ResourceManager::CreateShaderResourceView(std::string id, std::wstring text
 
 bool ResourceManager::CreateSamplerState(std::string id, D3D11_SAMPLER_DESC samplerDesc)
 {
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
 	// check if sampler state with this ID already exists
 	if (samplerStates[id] != nullptr)
 	{

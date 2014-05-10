@@ -37,11 +37,11 @@ public:
 	static bool CreateShaderResourceView(std::string id, std::wstring textureFilePath);
 	static bool CreateSamplerState(std::string id, D3D11_SAMPLER_DESC samplerDesc);
 
-	static ID3D11VertexShader* GetVertexShader(std::string id) { return vertexShaders[id]; }
-	static ID3D11PixelShader* GetPixelShader(std::string id) { return pixelShaders[id]; }
-	static ID3D11InputLayout* GetInputLayout(std::string id) { return inputLayouts[id]; }
-	static ID3D11ShaderResourceView* GetShaderResourceView(std::string id) { return shaderResourceViews[id]; }
-	static ID3D11SamplerState* GetSamplerState(std::string id) { return samplerStates[id]; }
+	static ID3D11VertexShader* GetVertexShader(std::string id) { return vertexShaders[ToUpper(id)]; }
+	static ID3D11PixelShader* GetPixelShader(std::string id) { return pixelShaders[ToUpper(id)]; }
+	static ID3D11InputLayout* GetInputLayout(std::string id) { return inputLayouts[ToUpper(id)]; }
+	static ID3D11ShaderResourceView* GetShaderResourceView(std::string id) { return shaderResourceViews[ToUpper(id)]; }
+	static ID3D11SamplerState* GetSamplerState(std::string id) { return samplerStates[ToUpper(id)]; }
 
 private:
 	static ID3D11Device* device;
