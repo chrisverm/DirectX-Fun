@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Game.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/04/2014
+// last edited 5/11/2014
 // ---------------------------------------------------------------------------
 
 #include "Game.h"
@@ -50,6 +50,8 @@ bool Game::Initialize(HINSTANCE hInstance, int icon)
 	if (!DX::Initialize(icon))
 		return false;
 
+	CreateGeometryBuffers();
+
 	Gameplay* gameplay = new Gameplay(device, deviceContext);
 	GameStateManager::AddState("Gameplay", gameplay);
 	GameStateManager::ChangeState("Gameplay");
@@ -89,6 +91,33 @@ void Game::Release(bool local)
 void Game::Reset()
 {
 
+}
+
+void Game::CreateConstantBuffers()
+{
+	D3D11_BUFFER_DESC perFrameBufferDesc;
+	perFrameBufferDesc.ByteWidth = sizeof(*perFrameData);
+	perFrameBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	perFrameBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	perFrameBufferDesc.CPUAccessFlags = 0;
+	perFrameBufferDesc.MiscFlags = 0;
+	perFrameBufferDesc.StructureByteStride = 0;
+	HR(device->CreateBuffer(
+		&perFrameBufferDesc,
+		NULL,
+		&perFrameConstBuffer));
+
+	D3D11_BUFFER_DESC perModelBufferDesc;
+	perModelBufferDesc.ByteWidth = sizeof(*perModelData);
+	perModelBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	perModelBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	perModelBufferDesc.CPUAccessFlags = 0;
+	perModelBufferDesc.MiscFlags = 0;
+	perModelBufferDesc.StructureByteStride = 0;
+	HR(device->CreateBuffer(
+		&perModelBufferDesc,
+		NULL,
+		&perModelConstBuffer));
 }
 
 void Game::OnResize()

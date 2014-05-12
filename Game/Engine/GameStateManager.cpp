@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // GameStateManager.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/06/2014
+// last edited 5/11/2014
 // ---------------------------------------------------------------------------
 
 #include "GameStateManager.h"
@@ -11,8 +11,12 @@ GameState* const* GameStateManager::CurrentState = &currentState;
 
 void GameStateManager::Release()
 {
-	for (StateMap::iterator it = states.begin(); it != states.end(); it++)
-	{ delete it->second; }
+	// free state pointers and remove them from the map
+	for (StateMap::iterator it = states.begin(); it != states.end(); it = states.begin())
+	{ 
+		delete it->second;
+		states.erase(it->first);
+	}
 
 	ResourceManager::Release();
 }
@@ -51,9 +55,13 @@ bool GameStateManager::ChangeState(std::string id)
 	}
 
 	if (currentState != nullptr)
+	{
 		currentState->Unload();
 
-	if (states[id]->Initialize())
+		ResourceManager::Release(); // release resources (which will be specific to this previous state)
+	}
+
+	if (states[id]->Load())
 	{
 		currentState = states[id];
 		return true;

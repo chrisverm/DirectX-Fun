@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Game.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/04/2014
+// last edited 5/11/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAME_H
@@ -26,6 +26,7 @@ public:
 	static void Reset();
 
 	static bool Initialize(HINSTANCE hInstance, int icon);
+	static void CreateConstantBuffers();
 	static void OnResize();
 	static void Update(float dt);
 	static void Draw(float dt);

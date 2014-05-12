@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // GameState.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/02/2014
+// last edited 5/11/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAME_STATE_H
@@ -17,14 +17,12 @@ public:
 		this->device = device;
 		this->deviceContext = deviceContext;
 	}
-	virtual ~GameState() { }
-	virtual void Unload()
-	{
-		Resources::Release();
-	}
+	virtual ~GameState() { };
 	virtual bool Initialize() = 0;
 	virtual void Update(float dt) = 0;
 	virtual void Draw(float dt) = 0;
+
+	void Unload() { this->~GameState(); }
 
 protected:
 	ID3D11Device* device;
