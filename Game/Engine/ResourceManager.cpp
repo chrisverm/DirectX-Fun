@@ -13,6 +13,8 @@ PSMap  ResourceManager::pixelShaders;
 ILMap  ResourceManager::inputLayouts;
 SRVMap ResourceManager::shaderResourceViews;
 SSMap  ResourceManager::samplerStates;
+RSMap  ResourceManager::rasterizerStates;
+DSSMap ResourceManager::depthStencilStates;
 
 void ResourceManager::Release()
 {
@@ -173,6 +175,60 @@ bool ResourceManager::AddSamplerState(std::string id, ID3D11SamplerState* sample
 	return true;
 }
 
+bool ResourceManager::AddRasterizerState(std::string id, ID3D11RasterizerState* rasterizerState)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if rasterizer state with this ID already exists
+	if (samplerStates[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A rasterizer state with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+	// check if rasterizer state param is a nullptr
+	if (rasterizerState == nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"The rasterizer state passed with the ID \"" + wid + L"\" cannot be a nullptr.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	rasterizerStates[id] = rasterizerState;
+
+	return true;
+}
+
+bool ResourceManager::AddDepthStencilState(std::string id, ID3D11DepthStencilState* depthStencilState)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if depth stencil state with this ID already exists
+	if (depthStencilStates[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A depth stencil state with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+	// check if depth stencil state param is a nullptr
+	if (depthStencilState == nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"The depth stencil state passed with the ID \"" + wid + L"\" cannot be a nullptr.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	depthStencilStates[id] = depthStencilState;
+
+	return true;
+}
+
 bool ResourceManager::CreateVertexShaderAndInputLayout(std::string id, std::wstring filepath, 
 			D3D11_INPUT_ELEMENT_DESC layoutDesc[], UINT numElements)
 {
@@ -310,6 +366,56 @@ bool ResourceManager::CreateSamplerState(std::string id, D3D11_SAMPLER_DESC samp
 		&samplerDesc,
 		&ss));
 	AddSamplerState(id, ss);
+
+	return true;
+}
+
+bool ResourceManager::CreateRasterizerState(std::string id, D3D11_RASTERIZER_DESC rasterizerDesc)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if rasterizer state with this ID already exists
+	if (rasterizerStates[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A rasterizer state with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	ID3D11RasterizerState* rasterizerState = nullptr;
+
+	HR(device->CreateRasterizerState(
+		&rasterizerDesc, 
+		&rasterizerState));
+
+	Resources::AddRasterizerState(id, rasterizerState);
+
+	return true;
+}
+
+bool ResourceManager::CreateDepthStencilState(std::string id, D3D11_DEPTH_STENCIL_DESC depthStencilDesc)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if depth stencil state with this ID already exists
+	if (depthStencilStates[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A depth stencil state with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	ID3D11DepthStencilState* depthStencilState = nullptr;
+
+	HR(device->CreateDepthStencilState(
+		&depthStencilDesc, 
+		&depthStencilState));
+
+	Resources::AddDepthStencilState(id, depthStencilState);
 
 	return true;
 }

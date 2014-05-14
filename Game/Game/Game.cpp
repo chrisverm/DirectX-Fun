@@ -50,7 +50,7 @@ bool Game::Initialize(HINSTANCE hInstance, int icon)
 	if (!DX::Initialize(icon))
 		return false;
 
-	CreateGeometryBuffers();
+	CreateConstantBuffers();
 
 	Gameplay* gameplay = new Gameplay(device, deviceContext);
 	GameStateManager::AddState("Gameplay", gameplay);

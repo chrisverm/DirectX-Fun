@@ -58,10 +58,10 @@ bool GameStateManager::ChangeState(std::string id)
 	{
 		currentState->Unload();
 
-		ResourceManager::Release(); // release resources (which will be specific to this previous state)
+		ResourceManager::Release(); // release resources (which will be specific to this state)
 	}
 
-	if (states[id]->Load())
+	if (states[id]->Initialize())
 	{
 		currentState = states[id];
 		return true;
