@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/11/2014
+// last edited 5/17/2014
 // ---------------------------------------------------------------------------
 
 #include "Gameplay.h"
@@ -13,16 +13,10 @@ Gameplay::Gameplay(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 
 Gameplay::~Gameplay()
 {
-	if (mesh != nullptr)
+	if (crate != nullptr)
 	{
-		delete mesh;
-		mesh = nullptr;
-	}
-
-	if (material != nullptr)
-	{
-		delete material;
-		material = nullptr;
+		delete crate;
+		crate = nullptr;
 	}
 }
 
@@ -52,39 +46,14 @@ bool Gameplay::Initialize()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	Resources::CreateSamplerState("MIN_MAG_POINT_MIP_LINEAR", samplerDesc);
 
-	/*struct Vertex
-	{
-		XMFLOAT3 Position;
-		XMFLOAT3 Normal;
-		XMFLOAT2 UV;
-	};
-
-	Vertex vertData[] = 
-	{
-		{ XMFLOAT3(-1, -1, -1), XMFLOAT3(0, 1, 0), XMFLOAT2(0, 0) },
-		{ XMFLOAT3(+1, -1, -1), XMFLOAT3(0, 1, 0), XMFLOAT2(1, 0) },
-		{ XMFLOAT3(+1, -1, +1), XMFLOAT3(0, 1, 0), XMFLOAT2(1, 1) },
-		{ XMFLOAT3(-1, -1, +1), XMFLOAT3(0, 1, 0), XMFLOAT2(0, 1) },
-	};
-
-	UINT indData[] = { 0, 1, 2, 0, 2, 3 };
-
-	Vertex* vertices = new Vertex[ARRAYSIZE(vertData)];
-	for (int i = 0; i < ARRAYSIZE(vertData); i++)
-	{ vertices[i] = vertData[i]; }
-
-	UINT* indices = new UINT[ARRAYSIZE(indData)];
-	for (int i = 0; i < ARRAYSIZE(indData); i++)
-	{ indices[i] = indData[i]; }
-
-	mesh = new Mesh(vertices, sizeof(Vertex), ARRAYSIZE(vertData), indices, ARRAYSIZE(indData));
-	mesh->Initialize(device, Resources::GetInputLayout("PNU"), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
-
-	material = new Material(Resources::GetVertexShader("PNU"), Resources::GetPixelShader("PNU"));
+	Material* material = new Material(Resources::GetVertexShader("PNU"), Resources::GetPixelShader("PNU"));
 	material->SetTexture(Resources::GetShaderResourceView("Crate"), Resources::GetSamplerState("MIN_MAG_POINT_MIP_LINEAR"));
 
-	mesh = Mesh::LoadFromOBJ("Resources/crate_obj.obj", "3v/3vn/2vt");
+	Mesh* mesh = Mesh::LoadFromOBJ("Resources/crate_obj.obj", "3v/3vn/2vt");
 	mesh->Initialize(device, Resources::GetInputLayout("PNU"));
+
+	crate = new Crate(mesh, material);
+	crate->Initialize(Game::perModelConstBuffer, Game::perModelData);
 
 	return true;
 }
@@ -118,19 +87,7 @@ void Gameplay::Update(float dt)
 		0,
 		0);
 
-	/* Per model constant buffer data */
-	XMMATRIX W = XMMatrixIdentity();
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
-
-	Game::perModelData->model = worldMatrix;
-
-	deviceContext->UpdateSubresource(
-		Game::perModelConstBuffer,
-		0,
-		NULL,
-		Game::perModelData,
-		0,
-		0);
+	crate->Update(dt);
 }
 
 void Gameplay::Draw(float dt)
@@ -148,13 +105,7 @@ void Gameplay::Draw(float dt)
 	deviceContext->VSSetConstantBuffers(0, 1, &Game::perFrameConstBuffer);
 	deviceContext->VSSetConstantBuffers(1, 1, &Game::perModelConstBuffer);
 
-	mesh->SetBuffers(deviceContext);
-	material->SetShaders(deviceContext);
-
-	deviceContext->DrawIndexed(
-		mesh->NumIndices,
-		0,
-		0);
+	crate->Render(deviceContext);
 
 	// Present the buffer
 	HR(Game::swapChain->Present(0, 0));

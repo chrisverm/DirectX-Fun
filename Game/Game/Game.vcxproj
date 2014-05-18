@@ -110,10 +110,12 @@ copy "$(SolutionDir)$(ProjectName)\Resources\" "$(SolutionDir)Binary\Resources" 
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConstantBuffers.h" />
+    <ClInclude Include="Crate.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Gameplay.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Crate.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gameplay.cpp" />
   </ItemGroup>

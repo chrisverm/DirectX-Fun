@@ -105,6 +105,8 @@ copy "$(SolutionDir)Libraries\" "$(SolutionDir)Binary"</Command>
   <ItemGroup>
     <ClInclude Include="DX.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="DXMath.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameTimer.h" />
@@ -116,6 +118,8 @@ copy "$(SolutionDir)Libraries\" "$(SolutionDir)Binary"</Command>
   <ItemGroup>
     <ClCompile Include="DX.cpp" />
     <ClCompile Include="dxerr.cpp" />
+    <ClCompile Include="DXMath.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Material.cpp" />
