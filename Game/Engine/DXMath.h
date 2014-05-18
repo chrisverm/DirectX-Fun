@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DXMath.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/17/2014
+// last edited 5/18/2014
 // ---------------------------------------------------------------------------
 
 #ifndef DX_MATH_H
@@ -12,46 +12,88 @@
 #define DegsToReds PI / 180.0f
 #define RadsToDegs 180.0f / PI
 
-struct Vector2
+class Vector2
 {
+public:
 	float X, Y;
 
-	Vector2(float x = 0, float y = 0) { X = x; Y = y; }
+	Vector2(float x = 0.0f, float y = 0.0f);
 
-	static Vector2 Zero() { return Vector2(0.0f, 0.0f); }
+	operator DirectX::XMFLOAT2();
+	operator DirectX::XMFLOAT3();
+	operator DirectX::XMFLOAT4();
+	operator DirectX::XMVECTOR();
 
-	operator DirectX::XMFLOAT2() { return DirectX::XMFLOAT2(X, Y); }
-	operator DirectX::XMFLOAT3() { return DirectX::XMFLOAT3(X, Y, 0); }
-	operator DirectX::XMFLOAT4() { return DirectX::XMFLOAT4(X, Y, 0, 0); }
-	operator DirectX::XMVECTOR() { return DirectX::XMVectorSet(X, Y, 0, 0); }
+	static Vector2 Zero();
 };
 
-struct Vector3
+class Vector3
 {
+public:
 	float X, Y, Z;
 
-	Vector3(float x = 0, float y = 0, float z = 0) { X = x; Y = y; Z = z; }
+	Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f);
 
-	static Vector3 Zero()		{ return Vector3(0.0f, 0.0f, 0.0f); }
-	static Vector3 Right()		{ return Vector3(1.0f, 0.0f, 0.0f); }
-	static Vector3 Up()			{ return Vector3(0.0f, 1.0f, 0.0f); }
-	static Vector3 Forward()	{ return Vector3(0.0f, 0.0f, 1.0f); }
+	operator DirectX::XMFLOAT3();
+	operator DirectX::XMFLOAT4();
+	operator DirectX::XMVECTOR();
 
-	operator DirectX::XMFLOAT3() { return DirectX::XMFLOAT3(X, Y, Z); }
-	operator DirectX::XMFLOAT4() { return DirectX::XMFLOAT4(X, Y, Z, 0); }
-	operator DirectX::XMVECTOR() { return DirectX::XMVectorSet(X, Y, Z, 0); }
+	static Vector3 Zero();
+	static Vector3 Right();
+	static Vector3 Up();
+	static Vector3 Forward();
 };
 
-struct Vector4
+class Vector4
 {
+public:
 	float X, Y, Z, W;
 
-	Vector4(float x = 0, float y = 0, float z = 0, float w = 0) { X = x; Y = y; Z = z; W = w; }
+	Vector4(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
 
-	static Vector4 Zero() { return Vector4(0.0f, 0.0f, 0.0f, 0.0f); }
+	operator DirectX::XMFLOAT4();
+	operator DirectX::XMVECTOR();
 
-	operator DirectX::XMFLOAT4() { return DirectX::XMFLOAT4(X, Y, Z, W); }
-	operator DirectX::XMVECTOR() { return DirectX::XMVectorSet(X, Y, Z, W); }
+	static Vector4 Zero();
+};
+
+class Clamps2
+{
+public:
+	float MinX, MaxX, MinY, MaxY;
+
+	Clamps2(float minX = 0.0f, float maxX = 0.0f, 
+			float minY = 0.0f, float maxY = 0.0f);
+
+	Vector2 Minimum();
+	Vector2 Maximum();
+};
+
+class Clamps3
+{
+public:
+	float MinX, MaxX, MinY, MaxY, MinZ, MaxZ;
+
+	Clamps3(float minX = 0.0f, float maxX = 0.0f, 
+			float minY = 0.0f, float maxY = 0.0f,
+			float minZ = 0.0f, float maxZ = 0.0f);
+
+	Vector3 Minimum();
+	Vector3 Maximum();
+};
+
+class Clamps4
+{
+public:
+	float MinX, MaxX, MinY, MaxY, MinZ, MaxZ, MinW, MaxW;
+
+	Clamps4(float minX = 0.0f, float maxX = 0.0f, 
+			float minY = 0.0f, float maxY = 0.0f,
+			float minZ = 0.0f, float maxZ = 0.0f,
+			float minW = 0.0f, float maxW = 0.0f);
+
+	Vector4 Minimum();
+	Vector4 Maximum();
 };
 
 class Quaternion
@@ -63,7 +105,6 @@ public:
 
 	DirectX::XMMATRIX GetRotationMatrix() const;
 
-	static Quaternion Identity() { return Quaternion(1.0f, 0.0f, 0.0f, 0.0f); }
 	static Quaternion FromRollPitchYaw(float x, float y, float z);
 
 	Quaternion operator*(const float& rhs) const;
@@ -72,8 +113,10 @@ public:
 	void operator*=(const float& rhs);
 	void operator*=(const Quaternion& rhs);
 
-	operator DirectX::XMFLOAT4() { return DirectX::XMFLOAT4(x, y, z, w); }
-	operator DirectX::XMVECTOR() { return DirectX::XMVectorSet(x, y, z, w); }
+	operator DirectX::XMFLOAT4();
+	operator DirectX::XMVECTOR();
+
+	static Quaternion Identity();
 
 private:
 	float w, x, y, z;

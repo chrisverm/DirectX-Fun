@@ -1,9 +1,193 @@
 // ---------------------------------------------------------------------------
 // DXMath.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/17/2014
+// last edited 5/18/2014
 // ---------------------------------------------------------------------------
 
 #include "DXMath.h"
+
+#pragma region Vector2
+
+Vector2::Vector2(float x, float y)
+{
+	X = x;
+	Y = x;
+}
+
+Vector2::operator DirectX::XMFLOAT2()
+{
+	return DirectX::XMFLOAT2(X, Y);
+}
+
+Vector2::operator DirectX::XMFLOAT3()
+{
+	return DirectX::XMFLOAT3(X, Y, 0.0f);
+}
+
+Vector2::operator DirectX::XMFLOAT4()
+{
+	return DirectX::XMFLOAT4(X, Y, 0.0f, 0.0f);
+}
+
+Vector2::operator DirectX::XMVECTOR()
+{
+	return DirectX::XMVectorSet(X, Y, 0.0f, 0.0f);
+}
+
+Vector2 Vector2::Zero()
+{
+	return Vector2(0.0f, 0.0f);
+}
+
+#pragma endregion
+
+#pragma region Vector3
+
+Vector3::Vector3(float x, float y, float z)
+{
+	X = x;
+	Y = y;
+	Z = z;
+}
+
+Vector3::operator DirectX::XMFLOAT3()
+{
+	return DirectX::XMFLOAT3(X, Y, Z);
+}
+
+Vector3::operator DirectX::XMFLOAT4()
+{
+	return DirectX::XMFLOAT4(X, Y, Z, 0.0f);
+}
+
+Vector3::operator DirectX::XMVECTOR()
+{
+	return DirectX::XMVectorSet(X, Y, Z, 0.0f);
+}
+
+Vector3 Vector3::Zero()
+{
+	return Vector3(0.0f, 0.0f, 0.0f);
+}
+
+Vector3 Vector3::Right()
+{
+	return Vector3(1.0f, 0.0f, 0.0f);
+}
+
+Vector3 Vector3::Up()
+{
+	return Vector3(0.0f, 1.0f, 0.0f);
+}
+
+Vector3 Vector3::Forward()
+{
+	return Vector3(0.0f, 0.0f, 1.0f);
+}
+
+#pragma endregion
+
+#pragma region Vector4
+
+Vector4::Vector4(float x, float y, float z, float w)
+{
+	X = x;
+	Y = y;
+	Z = z;
+	W = w;
+}
+
+Vector4::operator DirectX::XMFLOAT4()
+{
+	return DirectX::XMFLOAT4(X, Y, Z, W);
+}
+
+Vector4::operator DirectX::XMVECTOR()
+{
+	return DirectX::XMVectorSet(X, Y, Z, W);
+}
+
+Vector4 Vector4::Zero()
+{
+	return Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+#pragma endregion
+
+#pragma region Clamps2
+
+Clamps2::Clamps2(float minX, float maxX, float minY, float maxY)
+{
+	MinX = minX;
+	MaxX = maxX;
+	MinY = minY;
+	MaxY = maxY;
+}
+
+Vector2 Clamps2::Minimum()
+{
+	return Vector2(MinX, MinY);
+}
+
+Vector2 Clamps2::Maximum()
+{
+	return Vector2(MaxX, MaxY);
+}
+
+#pragma endregion
+
+#pragma region Clamps3
+
+Clamps3::Clamps3(float minX, float maxX, float minY, float maxY, 
+				 float minZ, float maxZ)
+{
+	MinX = minX;
+	MaxX = maxX;
+	MinY = minY;
+	MaxY = maxY;
+	MinZ = minZ;
+	MaxZ = maxZ;
+}
+
+Vector3 Clamps3::Minimum()
+{
+	return Vector3(MinX, MinY, MinZ);
+}
+
+Vector3 Clamps3::Maximum()
+{
+	return Vector3(MaxX, MaxY, MaxZ);
+}
+
+#pragma endregion
+
+#pragma region Vector4
+
+Clamps4::Clamps4(float minX, float maxX, float minY, float maxY,
+				 float minZ, float maxZ, float minW, float maxW)
+{
+	MinX = minX;
+	MaxX = maxX;
+	MinY = minY;
+	MaxY = maxY;
+	MinZ = minZ;
+	MaxZ = maxZ;
+	MinW = minW;
+	MaxW = maxW;
+}
+
+Vector4 Clamps4::Minimum()
+{
+	return Vector4(MinX, MinY, MinZ, MinW);
+}
+
+Vector4 Clamps4::Maximum()
+{
+	return Vector4(MaxX, MaxY, MaxZ, MaxW);
+}
+
+#pragma endregion
+
+#pragma region Quaternion
 
 Quaternion::Quaternion(float w, float x, float y, float z)
 {
@@ -98,3 +282,20 @@ void Quaternion::operator*=(const Quaternion& rhs)
 	this->y = (this->w * rhs.y) - (this->x * rhs.z) + (this->y * rhs.w) + (this->z * rhs.x);
 	this->z = (this->w * rhs.z) + (this->x * rhs.y) - (this->y * rhs.x) + (this->z * rhs.w);
 }
+
+Quaternion::operator DirectX::XMFLOAT4()
+{
+	return DirectX::XMFLOAT4(x, y, z, w);
+}
+
+Quaternion::operator DirectX::XMVECTOR()
+{
+	return DirectX::XMVectorSet(x, y, z, w);
+}
+
+Quaternion Quaternion::Identity()
+{
+	return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+}
+
+#pragma endregion
