@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Entity.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/17/2014
+// last edited 5/18/2014
 // ---------------------------------------------------------------------------
 
 #ifndef ENTITY_H
@@ -14,7 +14,7 @@ class Entity
 {
 public:
 	Entity();
-	~Entity();
+	virtual ~Entity();
 
 	virtual void Initialize(ID3D11Buffer* modelConstBuffer);
 	virtual void Update(float dt);

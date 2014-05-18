@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Entity.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/17/2014
+// last edited 5/18/2014
 // ---------------------------------------------------------------------------
 
 #include "Entity.h"
@@ -12,10 +12,7 @@ Entity::Entity()
 	scale		= Vector3(1.0f, 1.0f, 1.0f);
 }
 
-Entity::~Entity()
-{
-
-}
+Entity::~Entity() { }
 
 void Entity::Initialize(ID3D11Buffer* modelConstBuffer)
 {

@@ -1,33 +1,14 @@
 // ---------------------------------------------------------------------------
 // Crate.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/17/2014
+// last edited 5/18/2014
 // ---------------------------------------------------------------------------
 
 #include "Crate.h"
 
 Crate::Crate(Mesh* mesh, Material* material)
-	: Entity()
-{
-	this->mesh = mesh;
-	this->material = material;
-}
+	: DrawableEntity(mesh, material) { }
 
-Crate::~Crate()
-{
-	if (mesh != nullptr)
-	{
-		delete mesh;
-		mesh = nullptr;
-	}
-
-	if (material != nullptr)
-	{
-		delete material;
-		material = nullptr;
-	}
-
-	Entity::~Entity();
-}
+Crate::~Crate() { }
 
 void Crate::Initialize(ID3D11Buffer* modelConstBuffer, PerModelData* modelConstBufferData)
 {
@@ -51,8 +32,7 @@ void Crate::Render(ID3D11DeviceContext* deviceContext)
 {
 	SetConstantBuffer(deviceContext, modelConstBufferData);
 
-	mesh->SetBuffers(deviceContext);
-	material->SetShaders(deviceContext);
+	DrawableEntity::Render(deviceContext);
 
 	deviceContext->DrawIndexed(
 		mesh->NumIndices,
