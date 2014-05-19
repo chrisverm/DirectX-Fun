@@ -10,8 +10,13 @@
 Vector2::Vector2(float x, float y)
 {
 	X = x;
-	Y = x;
+	Y = y;
 }
+
+float Vector2::operator[](const int index) const
+{
+	return *(&X + index);
+};
 
 Vector2::operator DirectX::XMFLOAT2()
 {
@@ -48,6 +53,11 @@ Vector3::Vector3(float x, float y, float z)
 	Y = y;
 	Z = z;
 }
+
+float Vector3::operator[](const int index) const
+{
+	return *(&X + index);
+};
 
 Vector3::operator DirectX::XMFLOAT3()
 {
@@ -95,6 +105,11 @@ Vector4::Vector4(float x, float y, float z, float w)
 	Z = z;
 	W = w;
 }
+
+float Vector4::operator[](const int index) const
+{
+	return *(&X + index);
+};
 
 Vector4::operator DirectX::XMFLOAT4()
 {
@@ -160,7 +175,7 @@ Vector3 Clamps3::Maximum()
 
 #pragma endregion
 
-#pragma region Vector4
+#pragma region Clamps4
 
 Clamps4::Clamps4(float minX, float maxX, float minY, float maxY,
 				 float minZ, float maxZ, float minW, float maxW)
@@ -183,6 +198,137 @@ Vector4 Clamps4::Minimum()
 Vector4 Clamps4::Maximum()
 {
 	return Vector4(MaxX, MaxY, MaxZ, MaxW);
+}
+
+#pragma endregion
+
+#pragma region Matrix2
+
+Matrix2::Matrix2(float r1c1, float r1c2, float r2c1, float r2c2)
+{
+	R1C1 = r1c1;
+	R1C2 = r1c2;
+	R2C1 = r2c1;
+	R2C2 = r2c2;
+}
+
+Vector2 Matrix2::operator[](const int index) const
+{
+	return Vector2(*(&R1C1 + index * 2 + 0), 
+				   *(&R1C1 + index * 2 + 1));
+}
+
+Matrix2 Matrix2::Identity()
+{
+	return Matrix2(1.0f, 0.0f,
+				   0.0f, 1.0f);
+}
+
+#pragma endregion
+
+#pragma region Matrix3
+
+Matrix3::Matrix3(float r1c1, float r1c2, float r1c3,
+				 float r2c1, float r2c2, float r2c3,
+				 float r3c1, float r3c2, float r3c3)
+{
+	R1C1 = r1c1;
+	R1C2 = r1c2;
+	R1C3 = r1c3;
+	R2C1 = r2c1;
+	R2C2 = r2c2;
+	R2C3 = r2c3;
+	R3C1 = r3c1;
+	R3C2 = r3c2;
+	R3C3 = r3c3;
+}
+
+Vector3 Matrix3::operator[](const int index) const
+{
+	return Vector3(*(&R1C1 + index * 3 + 0), 
+				   *(&R1C1 + index * 3 + 1),
+				   *(&R1C1 + index * 3 + 2));
+}
+
+Matrix3::operator DirectX::XMFLOAT3X3()
+{
+	return DirectX::XMFLOAT3X3(R1C1, R1C2, R1C3,
+							   R2C1, R2C2, R2C3,
+							   R3C1, R3C2, R3C3);
+}
+
+Matrix3::operator DirectX::XMMATRIX()
+{
+	return DirectX::XMMATRIX(R1C1, R1C2, R1C3, 0.0f,
+							 R2C1, R2C2, R2C3, 0.0f,
+							 R3C1, R3C2, R3C3, 0.0f,
+							 0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+Matrix3 Matrix3::Identity()
+{
+	return Matrix3(1.0f, 0.0f, 0.0f,
+				   0.0f, 1.0f, 0.0f,
+				   0.0f, 0.0f, 1.0f);
+}
+
+#pragma endregion
+
+#pragma region Matrix4
+
+Matrix4::Matrix4(float r1c1, float r1c2, float r1c3, float r1c4,
+				 float r2c1, float r2c2, float r2c3, float r2c4,
+				 float r3c1, float r3c2, float r3c3, float r3c4,
+				 float r4c1, float r4c2, float r4c3, float r4c4)
+{
+	R1C1 = r1c1;
+	R1C2 = r1c2;
+	R1C3 = r1c3;
+	R1C4 = r1c4;
+	R2C1 = r2c1;
+	R2C2 = r2c2;
+	R2C3 = r2c3;
+	R2C4 = r2c4;
+	R3C1 = r3c1;
+	R3C2 = r3c2;
+	R3C3 = r3c3;
+	R3C4 = r3c4;
+	R4C1 = r4c1;
+	R4C2 = r4c2;
+	R4C3 = r4c3;
+	R4C4 = r4c4;
+}
+
+Vector4 Matrix4::operator[](const int index) const
+{
+	return Vector4(*(&R1C1 + index * 4 + 0), 
+				   *(&R1C1 + index * 4 + 1),
+				   *(&R1C1 + index * 4 + 2),
+				   *(&R1C1 + index * 4 + 3));
+}
+
+Matrix4::operator DirectX::XMFLOAT4X4()
+{
+	return DirectX::XMFLOAT4X4(R1C1, R1C2, R1C3, R1C4,
+							   R2C1, R2C2, R2C3, R2C4,
+							   R3C1, R3C2, R3C3, R3C4,
+							   R4C1, R4C2, R4C3, R4C4);
+}
+
+Matrix4::operator DirectX::XMMATRIX()
+{
+	return DirectX::XMMATRIX(R1C1, R1C2, R1C3, R1C4,
+							 R2C1, R2C2, R2C3, R2C4,
+							 R3C1, R3C2, R3C3, R3C4,
+							 R4C1, R4C2, R4C3, R4C4);
+}
+
+Matrix4 Matrix4::Identity()
+{
+	return Matrix4(1.0f, 0.0f, 0.0f, 0.0f,
+				   0.0f, 1.0f, 0.0f, 0.0f,
+				   0.0f, 0.0f, 1.0f, 0.0f,
+				   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 #pragma endregion

@@ -21,9 +21,8 @@ public:
 	virtual void SetConstantBuffer(ID3D11DeviceContext* deviceContext, void* data);
 
 protected:
-	Vector3 position;
+	Vector3 position, scale;
 	Quaternion orientation;
-	Vector3 scale;
 	XMFLOAT4X4 worldMatrix;
 
 	ID3D11Buffer* modelConstBuffer;
