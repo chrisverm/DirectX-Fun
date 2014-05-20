@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------
 // Crate.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/18/2014
+// last edited 5/19/2014
 // ---------------------------------------------------------------------------
 
 #include "Crate.h"
 
 Crate::Crate(Mesh* mesh, Material* material)
-	: DrawableEntity(mesh, material) { }
+	: MoveableEntity(mesh, material) { }
 
 Crate::~Crate() { }
 
@@ -15,15 +15,15 @@ void Crate::Initialize(ID3D11Buffer* modelConstBuffer, PerModelData* modelConstB
 	Entity::Initialize(modelConstBuffer);
 
 	this->modelConstBufferData = modelConstBufferData;
+
+	angularAccel.X += 22.5f * DegsToReds;
+	angularAccel.Y += 45.0f * DegsToReds;
+	angularAccel *= 5.0f;
 }
 
 void Crate::Update(float dt)
 {
-	orientation *= Quaternion::FromRollPitchYaw(22.5f * DegsToReds * dt, 
-												45.0f * DegsToReds * dt, 
-												0.0f);
-
-	Entity::Update(dt);
+	MoveableEntity::Update(dt);
 
 	modelConstBufferData->model = worldMatrix;
 }

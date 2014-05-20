@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DXMath.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/18/2014
+// last edited 5/19/2014
 // ---------------------------------------------------------------------------
 
 #include "DXMath.h"
@@ -13,10 +13,87 @@ Vector2::Vector2(float x, float y)
 	Y = y;
 }
 
+void Vector2::Normalize()
+{
+	float n = X * X + Y * Y;
+
+	if (n == 1) return;
+
+	*this /= sqrt(n);
+}
+
+void Vector2::ClampLength(Clamps1 clamps)
+{
+	float n = X * X + Y * Y;
+
+	if (n < clamps.Min * clamps.Min)
+		*this /= (sqrt(n) / clamps.Min);
+	else if (n > clamps.Max * clamps.Max)
+		*this /= (sqrt(n) / clamps.Max);
+}
+
+float Vector2::Dot(Vector2 v1, Vector2 v2)
+{
+	return v1.X * v2.X + v1.Y * v2.Y;
+}
+
 float Vector2::operator[](const int index) const
 {
 	return *(&X + index);
-};
+}
+
+Vector2 Vector2::operator-() const
+{
+	return Vector2(-this->X, -this->Y);
+}
+
+Vector2 Vector2::operator+(const Vector2& rhs) const
+{
+	return Vector2(this->X + rhs.X,
+				   this->Y + rhs.Y);
+}
+
+Vector2 Vector2::operator-(const Vector2& rhs) const
+{
+	return Vector2(this->X - rhs.X,
+				   this->Y - rhs.Y);
+}
+
+Vector2 Vector2::operator*(const float& rhs) const
+{
+	return Vector2(this->X * rhs, 
+				   this->Y * rhs);
+}
+
+Vector2 Vector2::operator/(const float& rhs) const
+{
+	return Vector2(this->X / rhs,
+				   this->Y / rhs);
+}
+
+void Vector2::operator+=(const Vector2& rhs)
+{
+	this->X += rhs.X;
+	this->Y += rhs.Y;
+}
+
+void Vector2::operator-=(const Vector2& rhs)
+{
+	this->X -= rhs.X;
+	this->Y -= rhs.Y;
+}
+
+void Vector2::operator*=(const float& rhs)
+{
+	this->X *= rhs;
+	this->Y *= rhs;
+}
+
+void Vector2::operator/=(const float& rhs)
+{
+	this->X /= rhs;
+	this->Y /= rhs;
+}
 
 Vector2::operator DirectX::XMFLOAT2()
 {
@@ -43,6 +120,16 @@ Vector2 Vector2::Zero()
 	return Vector2(0.0f, 0.0f);
 }
 
+Vector2 Vector2::Min()
+{
+	return Vector2(-FLT_MAX, -FLT_MAX);
+}
+
+Vector2 Vector2::Max()
+{
+	return Vector2(FLT_MAX, FLT_MAX);
+}
+
 #pragma endregion
 
 #pragma region Vector3
@@ -54,10 +141,102 @@ Vector3::Vector3(float x, float y, float z)
 	Z = z;
 }
 
+void Vector3::Normalize()
+{
+	float n = X * X + Y * Y + Z * Z;
+
+	if (n == 1) return;
+
+	*this /= sqrt(n);
+}
+
+void Vector3::ClampLength(Clamps1 clamps)
+{
+	float mag = sqrt(X * X + Y * Y + Z * Z);
+
+	if (mag < clamps.Min)
+		*this /= (mag / clamps.Min);
+	else if (mag > clamps.Max)
+		*this /= (mag / clamps.Max);
+}
+
+float Vector3::Dot(Vector3 v1, Vector3 v2)
+{
+	return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
+}
+
+Vector3 Vector3::Cross(Vector3 v1, Vector3 v2)
+{
+	return Vector3(v1.Y * v2.Z - v1.Z * v2.Y,
+				   v1.Z * v2.X - v1.X * v2.Z,
+				   v1.X * v2.Y - v1.Y * v2.X);
+}
+
 float Vector3::operator[](const int index) const
 {
 	return *(&X + index);
-};
+}
+
+Vector3 Vector3::operator-() const
+{
+	return Vector3(-this->X, -this->Y, -this->Z);
+}
+
+Vector3 Vector3::operator+(const Vector3& rhs) const
+{
+	return Vector3(this->X + rhs.X,
+				   this->Y + rhs.Y,
+				   this->Z + rhs.Z);
+}
+
+Vector3 Vector3::operator-(const Vector3& rhs) const
+{
+	return Vector3(this->X - rhs.X,
+				   this->Y - rhs.Y,
+				   this->Z - rhs.Z);
+}
+
+Vector3 Vector3::operator*(const float& rhs) const
+{
+	return Vector3(this->X * rhs, 
+				   this->Y * rhs,
+				   this->Z * rhs);
+}
+
+Vector3 Vector3::operator/(const float& rhs) const
+{
+	return Vector3(this->X / rhs,
+				   this->Y / rhs,
+				   this->Z / rhs);
+}
+
+void Vector3::operator+=(const Vector3& rhs)
+{
+	this->X += rhs.X;
+	this->Y += rhs.Y;
+	this->Z += rhs.Z;
+}
+
+void Vector3::operator-=(const Vector3& rhs)
+{
+	this->X -= rhs.X;
+	this->Y -= rhs.Y;
+	this->Z -= rhs.Z;
+}
+
+void Vector3::operator*=(const float& rhs)
+{
+	this->X *= rhs;
+	this->Y *= rhs;
+	this->Z *= rhs;
+}
+
+void Vector3::operator/=(const float& rhs)
+{
+	this->X /= rhs;
+	this->Y /= rhs;
+	this->Z /= rhs;
+}
 
 Vector3::operator DirectX::XMFLOAT3()
 {
@@ -77,6 +256,16 @@ Vector3::operator DirectX::XMVECTOR()
 Vector3 Vector3::Zero()
 {
 	return Vector3(0.0f, 0.0f, 0.0f);
+}
+
+Vector3 Vector3::Min()
+{
+	return Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+}
+
+Vector3 Vector3::Max()
+{
+	return Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
 }
 
 Vector3 Vector3::Right()
@@ -106,10 +295,103 @@ Vector4::Vector4(float x, float y, float z, float w)
 	W = w;
 }
 
+void Vector4::Normalize()
+{
+	float n = X * X + Y * Y + Z * Z + W * W;
+
+	if (n == 1) return;
+
+	*this /= sqrt(n);
+}
+
+void Vector4::ClampLength(Clamps1 clamps)
+{
+	float n = X * X + Y * Y + Z * Z + W * W;
+
+	if (n < clamps.Min * clamps.Min)
+		*this /= (sqrt(n) / clamps.Min);
+	else if (n > clamps.Max * clamps.Max)
+		*this /= (sqrt(n) / clamps.Max);
+}
+
+float Vector4::Dot(Vector4 v1, Vector4 v2)
+{
+	return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z + v1.W * v2.W;
+}
+
 float Vector4::operator[](const int index) const
 {
 	return *(&X + index);
-};
+}
+
+Vector4 Vector4::operator-() const
+{
+	return Vector4(-this->X, -this->Y, -this->Z, -this->W);
+}
+
+Vector4 Vector4::operator+(const Vector4& rhs) const
+{
+	return Vector4(this->X + rhs.X,
+				   this->Y + rhs.Y,
+				   this->Z + rhs.Z,
+				   this->W + rhs.W);
+}
+
+Vector4 Vector4::operator-(const Vector4& rhs) const
+{
+	return Vector4(this->X - rhs.X,
+				   this->Y - rhs.Y,
+				   this->Z - rhs.Z,
+				   this->W - rhs.W);
+}
+
+Vector4 Vector4::operator*(const float& rhs) const
+{
+	return Vector4(this->X * rhs, 
+				   this->Y * rhs,
+				   this->Z * rhs,
+				   this->W * rhs);
+}
+
+Vector4 Vector4::operator/(const float& rhs) const
+{
+	return Vector4(this->X / rhs,
+				   this->Y / rhs,
+				   this->Z / rhs,
+				   this->W / rhs);
+}
+
+void Vector4::operator+=(const Vector4& rhs)
+{
+	this->X += rhs.X;
+	this->Y += rhs.Y;
+	this->Z += rhs.Z;
+	this->W += rhs.W;
+}
+
+void Vector4::operator-=(const Vector4& rhs)
+{
+	this->X -= rhs.X;
+	this->Y -= rhs.Y;
+	this->Z -= rhs.Z;
+	this->W -= rhs.W;
+}
+
+void Vector4::operator*=(const float& rhs)
+{
+	this->X *= rhs;
+	this->Y *= rhs;
+	this->Z *= rhs;
+	this->W *= rhs;
+}
+
+void Vector4::operator/=(const float& rhs)
+{
+	this->X /= rhs;
+	this->Y /= rhs;
+	this->Z /= rhs;
+	this->W /= rhs;
+}
 
 Vector4::operator DirectX::XMFLOAT4()
 {
@@ -124,6 +406,36 @@ Vector4::operator DirectX::XMVECTOR()
 Vector4 Vector4::Zero()
 {
 	return Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+Vector4 Vector4::Min()
+{
+	return Vector4(-FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX);
+}
+
+Vector4 Vector4::Max()
+{
+	return Vector4(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
+}
+
+#pragma endregion
+
+#pragma region Clamps1
+
+Clamps1::Clamps1(float min, float max)
+{
+	Min = min;
+	Max = max;
+}
+
+Vector2 Clamps1::MinMaxVector2()
+{
+	return Vector2(Min, Max);
+}
+
+Clamps1 Clamps1::NoClamps()
+{
+	return Clamps1(-FLT_MAX, FLT_MAX);
 }
 
 #pragma endregion
@@ -146,6 +458,12 @@ Vector2 Clamps2::Minimum()
 Vector2 Clamps2::Maximum()
 {
 	return Vector2(MaxX, MaxY);
+}
+
+Clamps2 Clamps2::NoClamps()
+{
+	return Clamps2(-FLT_MAX, FLT_MAX,
+				   -FLT_MAX, FLT_MAX);
 }
 
 #pragma endregion
@@ -173,6 +491,13 @@ Vector3 Clamps3::Maximum()
 	return Vector3(MaxX, MaxY, MaxZ);
 }
 
+Clamps3 Clamps3::NoClamps()
+{
+	return Clamps3(-FLT_MAX, FLT_MAX,
+				   -FLT_MAX, FLT_MAX,
+				   -FLT_MAX, FLT_MAX);
+}
+
 #pragma endregion
 
 #pragma region Clamps4
@@ -198,6 +523,14 @@ Vector4 Clamps4::Minimum()
 Vector4 Clamps4::Maximum()
 {
 	return Vector4(MaxX, MaxY, MaxZ, MaxW);
+}
+
+Clamps4 Clamps4::NoClamps()
+{
+	return Clamps4(-FLT_MAX, FLT_MAX,
+				   -FLT_MAX, FLT_MAX,
+				   -FLT_MAX, FLT_MAX,
+				   -FLT_MAX, FLT_MAX);
 }
 
 #pragma endregion
@@ -390,6 +723,26 @@ Quaternion Quaternion::FromRollPitchYaw(float x, float y, float z)
 	// yaw
 	const float sy = sin(z * 0.5f);
 	const float cy = cos(z * 0.5f);
+
+	return Quaternion(cr * cp * cy + sr * sp * sy,
+					  sr * cp * cy - cr * sp * sy,
+					  cr * sp * cy + sr * cp * sy,
+					  cr * cp * sy - sr * sp * cy);
+}
+
+Quaternion Quaternion::FromRollPitchYaw(Vector3 vec)
+{
+	// roll
+	const float sr = sin(vec.X * 0.5f);
+	const float cr = cos(vec.X * 0.5f);
+
+	// pitch
+	const float sp = sin(vec.Y * 0.5f);
+	const float cp = cos(vec.Y * 0.5f);
+
+	// yaw
+	const float sy = sin(vec.Z * 0.5f);
+	const float cy = cos(vec.Z * 0.5f);
 
 	return Quaternion(cr * cp * cy + sr * sp * sy,
 					  sr * cp * cy - cr * sp * sy,

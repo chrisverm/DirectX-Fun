@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DXMath.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/18/2014
+// last edited 5/19/2014
 // ---------------------------------------------------------------------------
 
 #ifndef DX_MATH_H
@@ -12,6 +12,12 @@
 #define DegsToReds PI / 180.0f
 #define RadsToDegs 180.0f / PI
 
+// forward declerations
+class Clamps1;
+class Clamps2;
+class Clamps3;
+class Clamps4;
+
 class Vector2
 {
 public:
@@ -19,7 +25,21 @@ public:
 
 	Vector2(float x = 0.0f, float y = 0.0f);
 
+	void Normalize();
+	void ClampLength(Clamps1 clamps);
+
+	static float Dot(Vector2 v1, Vector2 v2);
+
 	float operator[](const int index) const;
+	Vector2 operator-() const;
+	Vector2 operator+(const Vector2& rhs) const;
+	Vector2 operator-(const Vector2& rhs) const;
+	Vector2 operator*(const float& rhs) const;
+	Vector2 operator/(const float& rhs) const;
+	void operator+=(const Vector2& rhs);
+	void operator-=(const Vector2& rhs);
+	void operator*=(const float& rhs);
+	void operator/=(const float& rhs);
 
 	operator DirectX::XMFLOAT2();
 	operator DirectX::XMFLOAT3();
@@ -27,6 +47,8 @@ public:
 	operator DirectX::XMVECTOR();
 
 	static Vector2 Zero();
+	static Vector2 Min();
+	static Vector2 Max();
 };
 
 class Vector3
@@ -36,13 +58,30 @@ public:
 
 	Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f);
 
+	void Normalize();
+	void ClampLength(Clamps1 clamps);
+
+	static float Dot(Vector3 v1, Vector3 v2);
+	static Vector3 Cross(Vector3 v1, Vector3 v2);
+
 	float operator[](const int index) const;
+	Vector3 operator-() const;
+	Vector3 operator+(const Vector3& rhs) const;
+	Vector3 operator-(const Vector3& rhs) const;
+	Vector3 operator*(const float& rhs) const;
+	Vector3 operator/(const float& rhs) const;
+	void operator+=(const Vector3& rhs);
+	void operator-=(const Vector3& rhs);
+	void operator*=(const float& rhs);
+	void operator/=(const float& rhs);
 
 	operator DirectX::XMFLOAT3();
 	operator DirectX::XMFLOAT4();
 	operator DirectX::XMVECTOR();
 
 	static Vector3 Zero();
+	static Vector3 Min();
+	static Vector3 Max();
 	static Vector3 Right();
 	static Vector3 Up();
 	static Vector3 Forward();
@@ -55,12 +94,28 @@ public:
 
 	Vector4(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
 
+	void Normalize();
+	void ClampLength(Clamps1 clamps);
+
+	static float Dot(Vector4 v1, Vector4 v2);
+
 	float operator[](const int index) const;
+	Vector4 operator-() const;
+	Vector4 operator+(const Vector4& rhs) const;
+	Vector4 operator-(const Vector4& rhs) const;
+	Vector4 operator*(const float& rhs) const;
+	Vector4 operator/(const float& rhs) const;
+	void operator+=(const Vector4& rhs);
+	void operator-=(const Vector4& rhs);
+	void operator*=(const float& rhs);
+	void operator/=(const float& rhs);
 
 	operator DirectX::XMFLOAT4();
 	operator DirectX::XMVECTOR();
 
 	static Vector4 Zero();
+	static Vector4 Min();
+	static Vector4 Max();
 };
 
 class Matrix2
@@ -117,6 +172,18 @@ public:
 	static Matrix4 Identity();
 };
 
+class Clamps1
+{
+public:
+	float Min, Max;
+
+	Clamps1(float min = 0.0f, float max = 0.0f);
+
+	Vector2 MinMaxVector2();
+
+	static Clamps1 NoClamps();
+};
+
 class Clamps2
 {
 public:
@@ -127,6 +194,8 @@ public:
 
 	Vector2 Minimum();
 	Vector2 Maximum();
+
+	static Clamps2 NoClamps();
 };
 
 class Clamps3
@@ -140,6 +209,8 @@ public:
 
 	Vector3 Minimum();
 	Vector3 Maximum();
+
+	static Clamps3 NoClamps();
 };
 
 class Clamps4
@@ -154,6 +225,8 @@ public:
 
 	Vector4 Minimum();
 	Vector4 Maximum();
+
+	static Clamps4 NoClamps();
 };
 
 class Quaternion
@@ -166,6 +239,7 @@ public:
 	DirectX::XMMATRIX GetRotationMatrix() const;
 
 	static Quaternion FromRollPitchYaw(float x, float y, float z);
+	static Quaternion FromRollPitchYaw(Vector3 vec);
 
 	Quaternion operator*(const float& rhs) const;
 	Quaternion operator*(const Quaternion& rhs) const;

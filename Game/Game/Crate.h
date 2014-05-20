@@ -1,17 +1,17 @@
 // ---------------------------------------------------------------------------
 // Crate.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/18/2014
+// last edited 5/19/2014
 // ---------------------------------------------------------------------------
 
 #ifndef CRATE_H
 #define CRATE_H
 
-#include "DrawableEntity.h"
+#include "MoveableEntity.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "ConstantBuffers.h"
 
-class Crate : public DrawableEntity
+class Crate : public MoveableEntity
 {
 public:
 	Crate(Mesh* mesh, Material* material);
