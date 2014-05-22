@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // MoveableEntity.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/19/2014
+// last edited 5/22/2014
 // ---------------------------------------------------------------------------
 
 #include "MoveableEntity.h"
