@@ -18,7 +18,7 @@ void Crate::Initialize(ID3D11Buffer* modelConstBuffer, PerModelData* modelConstB
 
 	angularAccel.X += 22.5f * DegsToReds;
 	angularAccel.Y += 45.0f * DegsToReds;
-	angularAccel *= 5.0f;
+	angularAccel *= 1.5f;
 }
 
 void Crate::Update(float dt)

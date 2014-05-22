@@ -6,6 +6,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <vector>
 #include "DXMath.h"
 #include "Mesh.h"
 #include "Material.h"
@@ -18,7 +19,8 @@ public:
 
 	virtual void Initialize(ID3D11Buffer* modelConstBuffer);
 	virtual void Update(float dt);
-	virtual void SetConstantBuffer(ID3D11DeviceContext* deviceContext, void* data);
+	void SetConstantBuffer(ID3D11DeviceContext* deviceContext, void* data);
+	bool AttachTo(Entity* parent, bool applyParentMatrix = true);
 
 protected:
 	Vector3 position, scale;
@@ -26,6 +28,15 @@ protected:
 	XMFLOAT4X4 worldMatrix;
 
 	ID3D11Buffer* modelConstBuffer;
+
+	Entity* parent;
+	bool applyParentMatrix;
+
+private:
+	std::vector<Entity*> children;
+
+	bool AddChild(Entity* child);
+	bool RemoveChild(Entity* child, bool release = true);
 
 };
 

@@ -28,16 +28,16 @@ void MoveableEntity::Update(float dt)
 	linearAccel.ClampLength(linearAccelClamps);
 	angularAccel.ClampLength(angularAccelClamps);
 
-	linearVel += linearAccel * dt;
-	angularVel += angularAccel * dt;
+	linearVel += linearAccel;
+	angularVel += angularAccel;
 
 	linearVel.ClampLength(linearVelClamps);
 	angularVel.ClampLength(angularVelClamps);
 
 	// friction ?
 
-	position += linearVel;
-	orientation *= Quaternion::FromRollPitchYaw(angularVel);
+	position += linearVel * dt;
+	orientation *= Quaternion::FromRollPitchYaw(angularVel * dt);
 
 	linearAccel = Vector3::Zero();
 	angularAccel = Vector3::Zero();
