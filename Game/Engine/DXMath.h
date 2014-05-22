@@ -127,7 +127,18 @@ public:
 	Matrix2(float r1c1 = 0.0f, float r1c2 = 0.0f,
 			float r2c1 = 0.0f, float r2c2 = 0.0f);
 
+	Matrix2 Transpose();
+	Matrix2 Inverse();
+
 	Vector2 operator[](const int index) const;
+	Matrix2 operator+(const Matrix2& rhs) const;
+	Matrix2 operator-(const Matrix2& rhs) const;
+	Matrix2 operator*(const float& rhs) const;
+	Matrix2 operator*(const Matrix2& rhs) const;
+	void operator+=(const Matrix2& rhs);
+	void operator-=(const Matrix2& rhs);
+	void operator*=(const float& rhs);
+	void operator*=(const Matrix2& rhs);
 
 	static Matrix2 Identity();
 };
@@ -143,7 +154,18 @@ public:
 			float r2c1 = 0.0f, float r2c2 = 0.0f, float r2c3 = 0.0f,
 			float r3c1 = 0.0f, float r3c2 = 0.0f, float r3c3 = 0.0f);
 
+	Matrix3 Transpose();
+	Matrix3 Inverse();
+
 	Vector3 operator[](const int index) const;
+	Matrix3 operator+(const Matrix3& rhs) const;
+	Matrix3 operator-(const Matrix3& rhs) const;
+	Matrix3 operator*(const float& rhs) const;
+	Matrix3 operator*(const Matrix3& rhs) const;
+	void operator+=(const Matrix3& rhs);
+	void operator-=(const Matrix3& rhs);
+	void operator*=(const float& rhs);
+	void operator*=(const Matrix3& rhs);
 
 	operator DirectX::XMFLOAT3X3();
 	operator DirectX::XMMATRIX();
@@ -164,7 +186,18 @@ public:
 			float r3c1 = 0.0f, float r3c2 = 0.0f, float r3c3 = 0.0f, float r3c4 = 0.0f,
 			float r4c1 = 0.0f, float r4c2 = 0.0f, float r4c3 = 0.0f, float r4c4 = 0.0f);
 
+	Matrix4 Transpose();
+	//Matrix4 Inverse();
+
 	Vector4 operator[](const int index) const;
+	Matrix4 operator+(const Matrix4& rhs) const;
+	Matrix4 operator-(const Matrix4& rhs) const;
+	Matrix4 operator*(const float& rhs) const;
+	Matrix4 operator*(const Matrix4& rhs) const;
+	void operator+=(const Matrix4& rhs);
+	void operator-=(const Matrix4& rhs);
+	void operator*=(const float& rhs);
+	void operator*=(const Matrix4& rhs);
 
 	operator DirectX::XMFLOAT4X4();
 	operator DirectX::XMMATRIX();

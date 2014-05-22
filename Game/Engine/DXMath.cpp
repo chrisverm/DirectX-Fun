@@ -539,16 +539,78 @@ Clamps4 Clamps4::NoClamps()
 
 Matrix2::Matrix2(float r1c1, float r1c2, float r2c1, float r2c2)
 {
-	R1C1 = r1c1;
-	R1C2 = r1c2;
-	R2C1 = r2c1;
-	R2C2 = r2c2;
+	R1C1 = r1c1; R1C2 = r1c2;
+	R2C1 = r2c1; R2C2 = r2c2;
+}
+
+Matrix2 Matrix2::Transpose()
+{
+	return Matrix2(R1C1, R2C1,
+				   R1C2, R2C2);
+}
+
+Matrix2 Matrix2::Inverse()
+{
+	float determinant = R1C1 * R2C2 - 
+						R1C2 * R2C1;
+	return Matrix2(R2C2, -R1C2,
+				   -R2C1, R1C1) * (1.0f / determinant);
 }
 
 Vector2 Matrix2::operator[](const int index) const
 {
 	return Vector2(*(&R1C1 + index * 2 + 0), 
 				   *(&R1C1 + index * 2 + 1));
+}
+
+Matrix2 Matrix2::operator+(const Matrix2& rhs) const
+{
+	return Matrix2(R1C1 + rhs.R1C1, R1C2 + rhs.R1C2,
+				   R2C1 + rhs.R2C1, R2C2 + rhs.R2C2);
+}
+
+Matrix2 Matrix2::operator-(const Matrix2& rhs) const
+{
+	return Matrix2(R1C1 - rhs.R1C1, R1C2 - rhs.R1C2,
+				   R2C1 - rhs.R2C1, R2C2 - rhs.R2C2);
+}
+
+Matrix2 Matrix2::operator*(const float& rhs) const
+{
+	return Matrix2(R1C1 * rhs, R1C2 * rhs,
+				   R2C1 * rhs, R2C2 * rhs);
+}
+
+Matrix2 Matrix2::operator*(const Matrix2& rhs) const
+{
+	return Matrix2(R1C1 * rhs.R1C1 + R1C2 * rhs.R2C1, R1C1 * rhs.R1C2 + R1C2 * rhs.R2C2,
+				   R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1, R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2);
+}
+
+void Matrix2::operator+=(const Matrix2& rhs)
+{
+	R1C1 += rhs.R1C1; R1C2 += rhs.R1C2;
+	R2C1 += rhs.R2C1; R2C2 += rhs.R2C2;
+}
+
+void Matrix2::operator-=(const Matrix2& rhs)
+{
+	R1C1 -= rhs.R1C1; R1C2 -= rhs.R1C2;
+	R2C1 -= rhs.R2C1; R2C2 -= rhs.R2C2;
+}
+
+void Matrix2::operator*=(const float& rhs)
+{
+	R1C1 *= rhs; R1C2 *= rhs;
+	R2C1 *= rhs; R2C2 *= rhs;
+}
+
+void Matrix2::operator*=(const Matrix2& rhs)
+{
+	R1C1 = R1C1 * rhs.R1C1 + R1C2 * rhs.R2C1;
+	R1C2 = R1C1 * rhs.R1C2 + R1C2 * rhs.R2C2;
+	R2C1 = R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1;
+	R2C2 = R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2;
 }
 
 Matrix2 Matrix2::Identity()
@@ -565,15 +627,37 @@ Matrix3::Matrix3(float r1c1, float r1c2, float r1c3,
 				 float r2c1, float r2c2, float r2c3,
 				 float r3c1, float r3c2, float r3c3)
 {
-	R1C1 = r1c1;
-	R1C2 = r1c2;
-	R1C3 = r1c3;
-	R2C1 = r2c1;
-	R2C2 = r2c2;
-	R2C3 = r2c3;
-	R3C1 = r3c1;
-	R3C2 = r3c2;
-	R3C3 = r3c3;
+	R1C1 = r1c1; R1C2 = r1c2; R1C3 = r1c3;
+	R2C1 = r2c1; R2C2 = r2c2; R2C3 = r2c3;
+	R3C1 = r3c1; R3C2 = r3c2; R3C3 = r3c3;
+}
+
+Matrix3 Matrix3::Transpose()
+{
+	return Matrix3(R1C1, R2C1, R3C1,
+				   R1C2, R2C2, R3C2,
+				   R1C3, R2C3, R3C3);
+}
+
+Matrix3 Matrix3::Inverse() // SOMETHING'S OFF
+{
+	float determinent = R1C1 * (R2C2 * R3C3 - R2C3 * R3C2) - 
+						R1C2 * (R2C1 * R3C3 - R2C3 * R3C1) + 
+						R1C3 * (R2C1 * R3C2 - R2C2 * R3C1);
+
+	Matrix3 mat;
+	mat.R1C1 = R2C2 * R3C3 - R2C3 * R3C2;
+	mat.R1C2 = R1C3 * R3C2 - R1C2 * R3C3;
+	mat.R1C3 = R1C2 * R2C3 - R1C3 * R2C2;
+	mat.R2C1 = R2C3 * R3C1 - R2C1 * R3C3;
+	mat.R2C2 = R1C1 * R3C3 - R1C3 * R3C1;
+	mat.R2C3 = R1C3 * R2C1 - R1C1 * R2C3;
+	mat.R3C1 = R2C1 * R3C2 - R2C2 * R3C1;
+	mat.R3C2 = R1C2 * R3C1 - R1C1 * R3C2;
+	mat.R3C3 = R1C1 * R2C2 - R1C2 * R2C1;
+	mat *= (1.0f / determinent);
+
+	return mat;
 }
 
 Vector3 Matrix3::operator[](const int index) const
@@ -581,6 +665,76 @@ Vector3 Matrix3::operator[](const int index) const
 	return Vector3(*(&R1C1 + index * 3 + 0), 
 				   *(&R1C1 + index * 3 + 1),
 				   *(&R1C1 + index * 3 + 2));
+}
+
+Matrix3 Matrix3::operator+(const Matrix3& rhs) const
+{
+	return Matrix3(R1C1 + rhs.R1C1, R1C2 + rhs.R1C2, R1C3 + rhs.R1C3,
+				   R2C1 + rhs.R2C1, R2C2 + rhs.R2C2, R2C3 + rhs.R2C3,
+				   R3C1 + rhs.R3C1, R3C2 + rhs.R3C2, R3C3 + rhs.R3C3);
+}
+
+Matrix3 Matrix3::operator-(const Matrix3& rhs) const
+{
+	return Matrix3(R1C1 - rhs.R1C1, R1C2 - rhs.R1C2, R1C3 - rhs.R1C3,
+				   R2C1 - rhs.R2C1, R2C2 - rhs.R2C2, R2C3 - rhs.R2C3,
+				   R3C1 - rhs.R3C1, R3C2 - rhs.R3C2, R3C3 - rhs.R3C3);
+}
+
+Matrix3 Matrix3::operator*(const float& rhs) const
+{
+	return Matrix3(R1C1 * rhs, R1C2 * rhs, R1C3 * rhs,
+				   R2C1 * rhs, R2C2 * rhs, R2C3 * rhs,
+				   R3C1 * rhs, R3C2 * rhs, R3C3 * rhs);
+}
+
+Matrix3 Matrix3::operator*(const Matrix3& rhs) const
+{
+	Matrix3 mat;
+	mat.R1C1 = R1C1 * rhs.R1C1 + R1C2 * rhs.R2C1 + R1C3 * rhs.R3C1;
+	mat.R1C2 = R1C1 * rhs.R1C2 + R1C2 * rhs.R2C2 + R1C3 * rhs.R3C2;
+	mat.R1C3 = R1C1 * rhs.R1C3 + R1C2 * rhs.R2C3 + R1C3 * rhs.R3C3;
+	mat.R2C1 = R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1 + R2C3 * rhs.R3C1;
+	mat.R2C2 = R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2 + R2C3 * rhs.R3C2;
+	mat.R2C3 = R2C1 * rhs.R1C3 + R2C2 * rhs.R2C3 + R2C3 * rhs.R3C3;
+	mat.R3C1 = R3C1 * rhs.R1C1 + R3C2 * rhs.R2C1 + R3C3 * rhs.R3C1;
+	mat.R3C2 = R3C1 * rhs.R1C2 + R3C2 * rhs.R2C2 + R3C3 * rhs.R3C2;
+	mat.R3C3 = R3C1 * rhs.R1C3 + R3C2 * rhs.R2C3 + R3C3 * rhs.R3C3;
+	return mat;
+}
+
+void Matrix3::operator+=(const Matrix3& rhs)
+{
+	R1C1 += rhs.R1C1; R1C2 += rhs.R1C2; R1C3 += rhs.R1C3;
+	R2C1 += rhs.R2C1; R2C2 += rhs.R2C2; R2C3 += rhs.R2C3;
+	R3C1 += rhs.R3C1; R3C2 += rhs.R3C2; R3C3 += rhs.R3C3;
+}
+
+void Matrix3::operator-=(const Matrix3& rhs)
+{
+	R1C1 -= rhs.R1C1; R1C2 -= rhs.R1C2; R1C3 -= rhs.R1C3;
+	R2C1 -= rhs.R2C1; R2C2 -= rhs.R2C2; R2C3 -= rhs.R2C3;
+	R3C1 -= rhs.R3C1; R3C2 -= rhs.R3C2; R3C3 -= rhs.R3C3;
+}
+
+void Matrix3::operator*=(const float& rhs)
+{
+	R1C1 *= rhs; R1C2 *= rhs; R1C3 *= rhs;
+	R2C1 *= rhs; R2C2 *= rhs; R2C3 *= rhs;
+	R3C1 *= rhs; R3C2 *= rhs; R3C3 *= rhs;
+}
+
+void Matrix3::operator*=(const Matrix3& rhs)
+{
+	R1C1 = R1C1 * rhs.R1C1 + R1C2 * rhs.R2C1 + R1C3 * rhs.R3C1;
+	R1C2 = R1C1 * rhs.R1C2 + R1C2 * rhs.R2C2 + R1C3 * rhs.R3C2;
+	R1C3 = R1C1 * rhs.R1C3 + R1C2 * rhs.R2C3 + R1C3 * rhs.R3C3;
+	R2C1 = R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1 + R2C3 * rhs.R3C1;
+	R2C2 = R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2 + R2C3 * rhs.R3C2;
+	R2C3 = R2C1 * rhs.R1C3 + R2C2 * rhs.R2C3 + R2C3 * rhs.R3C3;
+	R3C1 = R3C1 * rhs.R1C1 + R3C2 * rhs.R2C1 + R3C3 * rhs.R3C1;
+	R3C2 = R3C1 * rhs.R1C2 + R3C2 * rhs.R2C2 + R3C3 * rhs.R3C2;
+	R3C3 = R3C1 * rhs.R1C3 + R3C2 * rhs.R2C3 + R3C3 * rhs.R3C3;
 }
 
 Matrix3::operator DirectX::XMFLOAT3X3()
@@ -614,22 +768,10 @@ Matrix4::Matrix4(float r1c1, float r1c2, float r1c3, float r1c4,
 				 float r3c1, float r3c2, float r3c3, float r3c4,
 				 float r4c1, float r4c2, float r4c3, float r4c4)
 {
-	R1C1 = r1c1;
-	R1C2 = r1c2;
-	R1C3 = r1c3;
-	R1C4 = r1c4;
-	R2C1 = r2c1;
-	R2C2 = r2c2;
-	R2C3 = r2c3;
-	R2C4 = r2c4;
-	R3C1 = r3c1;
-	R3C2 = r3c2;
-	R3C3 = r3c3;
-	R3C4 = r3c4;
-	R4C1 = r4c1;
-	R4C2 = r4c2;
-	R4C3 = r4c3;
-	R4C4 = r4c4;
+	R1C1 = r1c1; R1C2 = r1c2; R1C3 = r1c3; R1C4 = r1c4;
+	R2C1 = r2c1; R2C2 = r2c2; R2C3 = r2c3; R2C4 = r2c4;
+	R3C1 = r3c1; R3C2 = r3c2; R3C3 = r3c3; R3C4 = r3c4;
+	R4C1 = r4c1; R4C2 = r4c2; R4C3 = r4c3; R4C4 = r4c4;
 }
 
 Vector4 Matrix4::operator[](const int index) const
@@ -638,6 +780,96 @@ Vector4 Matrix4::operator[](const int index) const
 				   *(&R1C1 + index * 4 + 1),
 				   *(&R1C1 + index * 4 + 2),
 				   *(&R1C1 + index * 4 + 3));
+}
+
+Matrix4 Matrix4::operator+(const Matrix4& rhs) const
+{
+	return Matrix4(R1C1 + rhs.R1C1, R1C2 + rhs.R1C2, R1C3 + rhs.R1C3, R1C4 + rhs.R1C4,
+				   R2C1 + rhs.R2C1, R2C2 + rhs.R2C2, R2C3 + rhs.R2C3, R2C4 + rhs.R2C4,
+				   R3C1 + rhs.R3C1, R3C2 + rhs.R3C2, R3C3 + rhs.R3C3, R3C4 + rhs.R3C4,
+				   R4C1 + rhs.R4C1, R4C2 + rhs.R4C2, R4C3 + rhs.R4C3, R4C4 + rhs.R4C4);
+}
+
+Matrix4 Matrix4::operator-(const Matrix4& rhs) const
+{
+	return Matrix4(R1C1 - rhs.R1C1, R1C2 - rhs.R1C2, R1C3 - rhs.R1C3, R1C4 - rhs.R1C4,
+				   R2C1 - rhs.R2C1, R2C2 - rhs.R2C2, R2C3 - rhs.R2C3, R2C4 - rhs.R2C4,
+				   R3C1 - rhs.R3C1, R3C2 - rhs.R3C2, R3C3 - rhs.R3C3, R3C4 - rhs.R3C4,
+				   R4C1 - rhs.R4C1, R4C2 - rhs.R4C2, R4C3 - rhs.R4C3, R4C4 - rhs.R4C4);
+}
+
+Matrix4 Matrix4::operator*(const float& rhs) const
+{
+	return Matrix4(R1C1 * rhs, R1C2 * rhs, R1C3 * rhs, R1C4 * rhs,
+				   R2C1 * rhs, R2C2 * rhs, R2C3 * rhs, R2C4 * rhs,
+				   R3C1 * rhs, R3C2 * rhs, R3C3 * rhs, R3C4 * rhs,
+				   R4C1 * rhs, R4C2 * rhs, R4C3 * rhs, R4C4 * rhs);
+}
+
+Matrix4 Matrix4::operator*(const Matrix4& rhs) const
+{
+	Matrix4 mat;
+	mat.R1C1 = R1C1 * rhs.R1C1 + R1C2 * rhs.R2C1 + R1C3 * rhs.R3C1 + R1C4 * rhs.R4C1;
+	mat.R1C2 = R1C1 * rhs.R1C2 + R1C2 * rhs.R2C2 + R1C3 * rhs.R3C2 + R1C4 * rhs.R4C2;
+	mat.R1C3 = R1C1 * rhs.R1C3 + R1C2 * rhs.R2C3 + R1C3 * rhs.R3C3 + R1C4 * rhs.R4C3;
+	mat.R1C4 = R1C1 * rhs.R1C4 + R1C2 * rhs.R2C4 + R1C3 * rhs.R3C4 + R1C4 * rhs.R4C4;
+	mat.R2C1 = R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1 + R2C3 * rhs.R3C1 + R2C4 * rhs.R4C1;
+	mat.R2C2 = R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2 + R2C3 * rhs.R3C2 + R2C4 * rhs.R4C2;
+	mat.R2C3 = R2C1 * rhs.R1C3 + R2C2 * rhs.R2C3 + R2C3 * rhs.R3C3 + R2C4 * rhs.R4C3;
+	mat.R2C4 = R2C1 * rhs.R1C4 + R2C2 * rhs.R2C4 + R2C3 * rhs.R3C4 + R2C4 * rhs.R4C4;
+	mat.R3C1 = R3C1 * rhs.R1C1 + R3C2 * rhs.R2C1 + R3C3 * rhs.R3C1 + R3C4 * rhs.R4C1;
+	mat.R3C2 = R3C1 * rhs.R1C2 + R3C2 * rhs.R2C2 + R3C3 * rhs.R3C2 + R3C4 * rhs.R4C2;
+	mat.R3C3 = R3C1 * rhs.R1C3 + R3C2 * rhs.R2C3 + R3C3 * rhs.R3C3 + R3C4 * rhs.R4C3;
+	mat.R3C4 = R3C1 * rhs.R1C4 + R3C2 * rhs.R2C4 + R3C3 * rhs.R3C4 + R3C4 * rhs.R4C4;
+	mat.R4C1 = R4C1 * rhs.R1C1 + R4C2 * rhs.R2C1 + R4C3 * rhs.R3C1 + R4C4 * rhs.R4C1;
+	mat.R4C2 = R4C1 * rhs.R1C2 + R4C2 * rhs.R2C2 + R4C3 * rhs.R3C2 + R4C4 * rhs.R4C2;
+	mat.R4C3 = R4C1 * rhs.R1C3 + R4C2 * rhs.R2C3 + R4C3 * rhs.R3C3 + R4C4 * rhs.R4C3;
+	mat.R4C4 = R4C1 * rhs.R1C4 + R4C2 * rhs.R2C4 + R4C3 * rhs.R3C4 + R4C4 * rhs.R4C4;
+	return mat;
+}
+
+void Matrix4::operator+=(const Matrix4& rhs)
+{
+	R1C1 += rhs.R1C1; R1C2 += rhs.R1C2; R1C3 += rhs.R1C3; R1C4 += rhs.R1C4;
+	R2C1 += rhs.R2C1; R2C2 += rhs.R2C2; R2C3 += rhs.R2C3; R2C4 += rhs.R2C4;
+	R3C1 += rhs.R3C1; R3C2 += rhs.R3C2; R3C3 += rhs.R3C3; R3C4 += rhs.R3C4;
+	R4C1 += rhs.R4C1; R4C2 += rhs.R4C2; R4C3 += rhs.R4C3; R4C4 += rhs.R4C4;
+}
+
+void Matrix4::operator-=(const Matrix4& rhs)
+{
+	R1C1 -= rhs.R1C1; R1C2 -= rhs.R1C2; R1C3 -= rhs.R1C3; R1C4 -= rhs.R1C4;
+	R2C1 -= rhs.R2C1; R2C2 -= rhs.R2C2; R2C3 -= rhs.R2C3; R2C4 -= rhs.R2C4;
+	R3C1 -= rhs.R3C1; R3C2 -= rhs.R3C2; R3C3 -= rhs.R3C3; R3C4 -= rhs.R3C4;
+	R4C1 -= rhs.R4C1; R4C2 -= rhs.R4C2; R4C3 -= rhs.R4C3; R4C4 -= rhs.R4C4;
+}
+
+void Matrix4::operator*=(const float& rhs)
+{
+	R1C1 *= rhs; R1C2 *= rhs; R1C3 *= rhs; R1C4 *= rhs;
+	R2C1 *= rhs; R2C2 *= rhs; R2C3 *= rhs; R2C4 *= rhs;
+	R3C1 *= rhs; R3C2 *= rhs; R3C3 *= rhs; R3C4 *= rhs;
+	R4C1 *= rhs; R4C2 *= rhs; R4C3 *= rhs; R4C4 *= rhs;
+}
+
+void Matrix4::operator*=(const Matrix4& rhs)
+{
+	R1C1 = R1C1 * rhs.R1C1 + R1C2 * rhs.R2C1 + R1C3 * rhs.R3C1 + R1C4 * rhs.R4C1;
+	R1C2 = R1C1 * rhs.R1C2 + R1C2 * rhs.R2C2 + R1C3 * rhs.R3C2 + R1C4 * rhs.R4C2;
+	R1C3 = R1C1 * rhs.R1C3 + R1C2 * rhs.R2C3 + R1C3 * rhs.R3C3 + R1C4 * rhs.R4C3;
+	R1C4 = R1C1 * rhs.R1C4 + R1C2 * rhs.R2C4 + R1C3 * rhs.R3C4 + R1C4 * rhs.R4C4;
+	R2C1 = R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1 + R2C3 * rhs.R3C1 + R2C4 * rhs.R4C1;
+	R2C2 = R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2 + R2C3 * rhs.R3C2 + R2C4 * rhs.R4C2;
+	R2C3 = R2C1 * rhs.R1C3 + R2C2 * rhs.R2C3 + R2C3 * rhs.R3C3 + R2C4 * rhs.R4C3;
+	R2C4 = R2C1 * rhs.R1C4 + R2C2 * rhs.R2C4 + R2C3 * rhs.R3C4 + R2C4 * rhs.R4C4;
+	R3C1 = R3C1 * rhs.R1C1 + R3C2 * rhs.R2C1 + R3C3 * rhs.R3C1 + R3C4 * rhs.R4C1;
+	R3C2 = R3C1 * rhs.R1C2 + R3C2 * rhs.R2C2 + R3C3 * rhs.R3C2 + R3C4 * rhs.R4C2;
+	R3C3 = R3C1 * rhs.R1C3 + R3C2 * rhs.R2C3 + R3C3 * rhs.R3C3 + R3C4 * rhs.R4C3;
+	R3C4 = R3C1 * rhs.R1C4 + R3C2 * rhs.R2C4 + R3C3 * rhs.R3C4 + R3C4 * rhs.R4C4;
+	R4C1 = R4C1 * rhs.R1C1 + R4C2 * rhs.R2C1 + R4C3 * rhs.R3C1 + R4C4 * rhs.R4C1;
+	R4C2 = R4C1 * rhs.R1C2 + R4C2 * rhs.R2C2 + R4C3 * rhs.R3C2 + R4C4 * rhs.R4C2;
+	R4C3 = R4C1 * rhs.R1C3 + R4C2 * rhs.R2C3 + R4C3 * rhs.R3C3 + R4C4 * rhs.R4C3;
+	R4C4 = R4C1 * rhs.R1C4 + R4C2 * rhs.R2C4 + R4C3 * rhs.R3C4 + R4C4 * rhs.R4C4;
 }
 
 Matrix4::operator DirectX::XMFLOAT4X4()
