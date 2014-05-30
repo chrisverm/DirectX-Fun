@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Entity.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/22/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #ifndef ENTITY_H
@@ -14,6 +14,9 @@
 class Entity
 {
 public:
+	Vector3 Position, Scale;
+	Quaternion Orientation;
+
 	Entity();
 	virtual ~Entity();
 
@@ -23,8 +26,6 @@ public:
 	bool AttachTo(Entity* parent, bool applyParentMatrix = true);
 
 protected:
-	Vector3 position, scale;
-	Quaternion orientation;
 	XMFLOAT4X4 worldMatrix;
 
 	ID3D11Buffer* modelConstBuffer;

@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // ResourceManager.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/04/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #include "ResourceManager.h"
@@ -8,6 +8,8 @@
 ID3D11Device* ResourceManager::device = nullptr;
 ID3D11DeviceContext* ResourceManager::deviceContext = nullptr;
 
+MeMap  ResourceManager::meshes;
+MaMap  ResourceManager::materials;
 VSMap  ResourceManager::vertexShaders;
 PSMap  ResourceManager::pixelShaders;
 ILMap  ResourceManager::inputLayouts;
@@ -18,6 +20,12 @@ DSSMap ResourceManager::depthStencilStates;
 
 void ResourceManager::Release()
 {
+	for (MeMap::iterator it = meshes.begin(); it != meshes.end(); it = meshes.begin())
+	{ delete it->second; meshes.erase(it->first); }
+
+	for (MaMap::iterator it = materials.begin(); it != materials.end(); it = materials.begin())
+	{ delete it->second; materials.erase(it->first); }
+
 	for (VSMap::iterator it = vertexShaders.begin(); it != vertexShaders.end(); it = vertexShaders.begin())
 	{ ReleaseMacro(it->second); vertexShaders.erase(it->first); }
 
@@ -38,6 +46,60 @@ void ResourceManager::Initialize(ID3D11Device* device, ID3D11DeviceContext* devi
 {
 	ResourceManager::device = device;
 	ResourceManager::deviceContext = deviceContext;
+}
+
+bool ResourceManager::AddMesh(std::string id, Mesh* mesh)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if mesh with this ID already exists
+	if (meshes[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A mesh with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+	// check if mesh param is a nullptr
+	if (mesh == nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"The mesh passed with the ID \"" + wid + L"\" cannot be a nullptr.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	meshes[id] = mesh;
+
+	return true;
+}
+
+bool ResourceManager::AddMaterial(std::string id, Material* material)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if material with this ID already exists
+	if (materials[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A material with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+	// check if material param is a nullptr
+	if (material == nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"The material passed with the ID \"" + wid + L"\" cannot be a nullptr.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	materials[id] = material;
+
+	return true;
 }
 
 bool ResourceManager::AddVertexShader(std::string id, ID3D11VertexShader* vertexShader)
@@ -229,6 +291,55 @@ bool ResourceManager::AddDepthStencilState(std::string id, ID3D11DepthStencilSta
 	return true;
 }
 
+bool ResourceManager::CreateMesh(std::string id, std::string objFilePath, std::string faceFormat, ID3D11InputLayout* inputLayout)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if mesh with this ID already exists
+	if (meshes[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A mesh with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	Mesh* mesh = Mesh::LoadFromOBJ(objFilePath, faceFormat);
+
+	if (inputLayout == nullptr)
+		mesh->Initialize(device, Resources::GetInputLayout(mesh->ILName));
+	else
+		mesh->Initialize(device, inputLayout);
+
+	AddMesh(id, mesh);
+
+	return true;
+}
+
+bool ResourceManager::CreateMaterial(std::string id, ID3D11VertexShader* vertexShader, ID3D11PixelShader* pixelShader,
+	ID3D11ShaderResourceView* shaderResourceView, ID3D11SamplerState* samplerState)
+{
+	// ensure id is all uppercase to prevent same string IDs with different char cases
+	id = ToUpper(id);
+
+	// check if material with this ID already exists
+	if (materials[id] != nullptr)
+	{
+		std::wstring wid = std::wstring(id.begin(), id.end());
+		std::wstring error = L"A material with the ID \"" + wid + L"\" already exists.";
+		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
+		return false;
+	}
+
+	Material* material = new Material(vertexShader, pixelShader);
+	material->SetTexture(shaderResourceView, samplerState);
+
+	AddMaterial(id, material);
+
+	return true;
+}
+
 bool ResourceManager::CreateVertexShaderAndInputLayout(std::string id, std::wstring filepath, 
 			D3D11_INPUT_ELEMENT_DESC layoutDesc[], UINT numElements)
 {
@@ -296,28 +407,6 @@ bool ResourceManager::CreatePixelShader(std::string id, std::wstring filepath)
 
 	return true;
 }
-
-//bool ResourceManager::CreateInputLayout(std::string id, D3D11_INPUT_ELEMENT_DESC layoutDesc[])
-//{
-//	// check if input layout with this ID already exists
-//	if (inputLayouts[id] != nullptr)
-//	{
-//		std::wstring wid = std::wstring(id.begin(), id.end());
-//		std::wstring error = L"An input layout with the ID \"" + wid + L"\" already exists.";
-//		DXTRACE_ERR_MSGBOX(error.c_str(), NULL);
-//		return false;
-//	}
-//
-//	ID3D11InputLayout* inputLayout = nullptr;
-//
-//	/*HR(device->CreateInputLayout(
-//		vertex_PNU_Desc,
-//		ARRAYSIZE(vertex_PNU_Desc),
-//		vsBlob->GetBufferPointer(),
-//		vsBlob->GetBufferSize(),
-//		&inputLayout));*/
-//	AddInputLayout(id, inputLayout);
-//}
 
 bool ResourceManager::CreateShaderResourceView(std::string id, std::wstring textureFilePath)
 {

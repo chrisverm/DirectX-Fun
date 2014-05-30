@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Mesh.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/05/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #ifndef MESH_H
@@ -11,7 +11,6 @@
 #include <fstream>
 #include <d3d11.h>
 #include "Globals.h"
-#include "ResourceManager.h"
 
 using namespace DirectX;
 

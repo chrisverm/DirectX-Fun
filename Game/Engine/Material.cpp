@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Material.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/04/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #include "Material.h"
@@ -21,7 +21,7 @@ void Material::SetTexture(ID3D11ShaderResourceView* shaderResourceView, ID3D11Sa
 	this->shaderResourceView = shaderResourceView;
 	this->samplerState = samplerState;
 
-	textured = true;
+	textured = shaderResourceView != nullptr && samplerState != nullptr;
 }
 
 void Material::SetShaders(ID3D11DeviceContext* deviceContext)
@@ -29,6 +29,9 @@ void Material::SetShaders(ID3D11DeviceContext* deviceContext)
 	deviceContext->VSSetShader(vertexShader, NULL, 0);
 	deviceContext->PSSetShader(pixelShader, NULL, 0);
 
-	deviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
-	deviceContext->PSSetSamplers(0, 1, &samplerState);
+	if (textured)
+	{
+		deviceContext->PSSetShaderResources(0, 1, &shaderResourceView);
+		deviceContext->PSSetSamplers(0, 1, &samplerState);
+	}
 }

@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // MoveableEntity.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/22/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #include "MoveableEntity.h"
@@ -36,8 +36,8 @@ void MoveableEntity::Update(float dt)
 
 	// friction ?
 
-	position += linearVel * dt;
-	orientation *= Quaternion::FromRollPitchYaw(angularVel * dt);
+	Position += linearVel * dt;
+	Orientation *= Quaternion::FromRollPitchYaw(angularVel * dt);
 
 	linearAccel = Vector3::Zero();
 	angularAccel = Vector3::Zero();

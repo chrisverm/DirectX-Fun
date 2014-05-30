@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/17/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #include "Gameplay.h"
@@ -46,13 +46,14 @@ bool Gameplay::Initialize()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	Resources::CreateSamplerState("MIN_MAG_POINT_MIP_LINEAR", samplerDesc);
 
-	Material* material = new Material(Resources::GetVertexShader("PNU"), Resources::GetPixelShader("PNU"));
-	material->SetTexture(Resources::GetShaderResourceView("Crate"), Resources::GetSamplerState("MIN_MAG_POINT_MIP_LINEAR"));
+	/* Meshes */
+	Resources::CreateMesh("Crate", "Resources/crate_obj.obj", "3v/3vn/2vt", Resources::GetInputLayout("PNU"));
+	
+	/* Materials */
+	Resources::CreateMaterial("Crate", Resources::GetVertexShader("PNU"), Resources::GetPixelShader("PNU"),
+		Resources::GetShaderResourceView("Crate"), Resources::GetSamplerState("MIN_MAG_POINT_MIP_LINEAR"));
 
-	Mesh* mesh = Mesh::LoadFromOBJ("Resources/crate_obj.obj", "3v/3vn/2vt");
-	mesh->Initialize(device, Resources::GetInputLayout("PNU"));
-
-	crate = new Crate(mesh, material);
+	crate = new Crate(Resources::GetMesh("Crate"), Resources::GetMaterial("Crate"));
 	crate->Initialize(Game::perModelConstBuffer, Game::perModelData);
 
 	return true;

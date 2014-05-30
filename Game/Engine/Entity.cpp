@@ -1,15 +1,15 @@
 // ---------------------------------------------------------------------------
 // Entity.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/22/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #include "Entity.h"
 
 Entity::Entity()
 {
-	position	= Vector3::Zero();
-	orientation = Quaternion::Identity();
-	scale		= Vector3(1.0f, 1.0f, 1.0f);
+	Position	= Vector3::Zero();
+	Orientation = Quaternion::Identity();
+	Scale		= Vector3(1.0f, 1.0f, 1.0f);
 
 	modelConstBuffer = nullptr;
 	parent = nullptr;
@@ -28,9 +28,9 @@ void Entity::Initialize(ID3D11Buffer* modelConstBuffer)
 
 void Entity::Update(float dt)
 {
-	XMMATRIX trans  = XMMatrixTranslationFromVector(position);
-	XMMATRIX rot	= XMMatrixRotationQuaternion(orientation);
-	XMMATRIX sca	= XMMatrixScalingFromVector(scale);
+	XMMATRIX trans  = XMMatrixTranslationFromVector(Position);
+	XMMATRIX rot	= XMMatrixRotationQuaternion(Orientation);
+	XMMATRIX sca	= XMMatrixScalingFromVector(Scale);
 	XMMATRIX world	= sca * rot * trans;
 
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(world));
