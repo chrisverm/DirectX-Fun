@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // GameState.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/11/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAME_STATE_H
@@ -18,6 +18,7 @@ public:
 		this->deviceContext = deviceContext;
 	}
 	virtual ~GameState() { };
+	virtual bool Load() = 0;
 	virtual bool Initialize() = 0;
 	virtual void Update(float dt) = 0;
 	virtual void Draw(float dt) = 0;

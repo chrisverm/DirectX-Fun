@@ -20,17 +20,17 @@ Gameplay::~Gameplay()
 	}
 }
 
-bool Gameplay::Initialize()
+bool Gameplay::Load()
 {
 	static D3D11_INPUT_ELEMENT_DESC vertex_PNU_Desc[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL"	, 0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 12,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,			0, 24,	D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	/* Vertex and Pixel Shaders */
-	Resources::CreateVertexShaderAndInputLayout("PNU", L"Shaders/VS_PNU.cso", 
+	Resources::CreateVertexShaderAndInputLayout("PNU", L"Shaders/VS_PNU.cso",
 		vertex_PNU_Desc, ARRAYSIZE(vertex_PNU_Desc));
 	Resources::CreatePixelShader("PNU", L"Shaders/PS_PNU.cso");
 
@@ -40,7 +40,7 @@ bool Gameplay::Initialize()
 	/* Sampler States */
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter	 = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -48,11 +48,16 @@ bool Gameplay::Initialize()
 
 	/* Meshes */
 	Resources::CreateMesh("Crate", "Resources/crate_obj.obj", "3v/3vn/2vt", Resources::GetInputLayout("PNU"));
-	
+
 	/* Materials */
 	Resources::CreateMaterial("Crate", Resources::GetVertexShader("PNU"), Resources::GetPixelShader("PNU"),
 		Resources::GetShaderResourceView("Crate"), Resources::GetSamplerState("MIN_MAG_POINT_MIP_LINEAR"));
 
+	return true;
+}
+
+bool Gameplay::Initialize()
+{
 	crate = new Crate(Resources::GetMesh("Crate"), Resources::GetMaterial("Crate"));
 	crate->Initialize(Game::perModelConstBuffer, Game::perModelData);
 

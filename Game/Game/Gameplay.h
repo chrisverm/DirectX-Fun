@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/17/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAMEPLAY_H
@@ -19,6 +19,7 @@ class Gameplay : public GameState
 public:
 	Gameplay(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 	~Gameplay();
+	bool Load();
 	bool Initialize();
 	void Update(float dt);
 	void Draw(float dt);

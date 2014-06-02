@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // GameStateManager.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/11/2014
+// last edited 5/30/2014
 // ---------------------------------------------------------------------------
 
 #include "GameStateManager.h"
@@ -61,7 +61,7 @@ bool GameStateManager::ChangeState(std::string id)
 		ResourceManager::Release(); // release resources (which will be specific to this state)
 	}
 
-	if (states[id]->Initialize())
+	if (states[id]->Load() && states[id]->Initialize())
 	{
 		currentState = states[id];
 		return true;
