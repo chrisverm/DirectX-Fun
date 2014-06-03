@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DXMath.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/19/2014
+// last edited 6/03/2014
 // ---------------------------------------------------------------------------
 
 #ifndef DX_MATH_H
@@ -17,6 +17,9 @@ class Clamps1;
 class Clamps2;
 class Clamps3;
 class Clamps4;
+class Matrix2;
+class Matrix3;
+class Matrix4;
 
 class Vector2
 {
@@ -60,6 +63,8 @@ public:
 
 	void Normalize();
 	void ClampLength(Clamps1 clamps);
+	Matrix4 GetTranslationMatrix4();
+	Matrix4 GetScaleMatrix4();
 
 	static float Dot(Vector3 v1, Vector3 v2);
 	static Vector3 Cross(Vector3 v1, Vector3 v2);
@@ -120,6 +125,7 @@ public:
 
 class Matrix2
 {
+	static const int DIMENSION = 2;
 public:
 	float R1C1, R1C2;
 	float R2C1, R2C2;
@@ -129,12 +135,14 @@ public:
 
 	Matrix2 Transpose();
 	Matrix2 Inverse();
+	float Determinant();
 
 	Vector2 operator[](const int index) const;
 	Matrix2 operator+(const Matrix2& rhs) const;
 	Matrix2 operator-(const Matrix2& rhs) const;
 	Matrix2 operator*(const float& rhs) const;
 	Matrix2 operator*(const Matrix2& rhs) const;
+	float* operator[](const int index);
 	void operator+=(const Matrix2& rhs);
 	void operator-=(const Matrix2& rhs);
 	void operator*=(const float& rhs);
@@ -145,6 +153,7 @@ public:
 
 class Matrix3
 {
+	static const int DIMENSION = 3;
 public:
 	float R1C1, R1C2, R1C3;
 	float R2C1, R2C2, R2C3;
@@ -156,12 +165,14 @@ public:
 
 	Matrix3 Transpose();
 	Matrix3 Inverse();
+	float Determinant();
 
 	Vector3 operator[](const int index) const;
 	Matrix3 operator+(const Matrix3& rhs) const;
 	Matrix3 operator-(const Matrix3& rhs) const;
 	Matrix3 operator*(const float& rhs) const;
 	Matrix3 operator*(const Matrix3& rhs) const;
+	float* operator[](const int index);
 	void operator+=(const Matrix3& rhs);
 	void operator-=(const Matrix3& rhs);
 	void operator*=(const float& rhs);
@@ -175,6 +186,7 @@ public:
 
 class Matrix4
 {
+	static const int DIMENSION = 4;
 public:
 	float R1C1, R1C2, R1C3, R1C4;
 	float R2C1, R2C2, R2C3, R2C4;
@@ -188,12 +200,14 @@ public:
 
 	Matrix4 Transpose();
 	//Matrix4 Inverse();
+	//float Determinant();
 
 	Vector4 operator[](const int index) const;
 	Matrix4 operator+(const Matrix4& rhs) const;
 	Matrix4 operator-(const Matrix4& rhs) const;
 	Matrix4 operator*(const float& rhs) const;
 	Matrix4 operator*(const Matrix4& rhs) const;
+	float* operator[](const int index);
 	void operator+=(const Matrix4& rhs);
 	void operator-=(const Matrix4& rhs);
 	void operator*=(const float& rhs);
@@ -269,10 +283,9 @@ public:
 	void Normalize();
 	void Rotate(Vector3 axis, float fAngle);
 
+	Vector3 GetRollPitchYaw() const;
+	Matrix4 GetRotationMatrix4() const;
 	DirectX::XMMATRIX GetRotationMatrix() const;
-
-	static Quaternion FromRollPitchYaw(float x, float y, float z);
-	static Quaternion FromRollPitchYaw(Vector3 vec);
 
 	Quaternion operator*(const float& rhs) const;
 	Quaternion operator*(const Quaternion& rhs) const;
@@ -284,6 +297,8 @@ public:
 	operator DirectX::XMVECTOR();
 
 	static Quaternion Identity();
+	static Quaternion FromRollPitchYaw(float x, float y, float z);
+	static Quaternion FromRollPitchYaw(Vector3 vec);
 
 private:
 	float w, x, y, z;

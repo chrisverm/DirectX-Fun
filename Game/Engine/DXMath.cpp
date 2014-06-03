@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DXMath.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/19/2014
+// last edited 6/03/2014
 // ---------------------------------------------------------------------------
 
 #include "DXMath.h"
@@ -158,6 +158,24 @@ void Vector3::ClampLength(Clamps1 clamps)
 		*this /= (mag / clamps.Min);
 	else if (mag > clamps.Max)
 		*this /= (mag / clamps.Max);
+}
+
+Matrix4 Vector3::GetTranslationMatrix4()
+{
+	Matrix4 mat = Matrix4::Identity();
+	mat.R1C4 = this->X;
+	mat.R2C4 = this->Y;
+	mat.R3C4 = this->Z;
+	return mat;
+}
+
+Matrix4 Vector3::GetScaleMatrix4()
+{
+	Matrix4 mat = Matrix4::Identity();
+	mat.R1C1 = this->X;
+	mat.R2C2 = this->Y;
+	mat.R3C3 = this->Z;
+	return mat;
 }
 
 float Vector3::Dot(Vector3 v1, Vector3 v2)
@@ -420,121 +438,6 @@ Vector4 Vector4::Max()
 
 #pragma endregion
 
-#pragma region Clamps1
-
-Clamps1::Clamps1(float min, float max)
-{
-	Min = min;
-	Max = max;
-}
-
-Vector2 Clamps1::MinMaxVector2()
-{
-	return Vector2(Min, Max);
-}
-
-Clamps1 Clamps1::NoClamps()
-{
-	return Clamps1(-FLT_MAX, FLT_MAX);
-}
-
-#pragma endregion
-
-#pragma region Clamps2
-
-Clamps2::Clamps2(float minX, float maxX, float minY, float maxY)
-{
-	MinX = minX;
-	MaxX = maxX;
-	MinY = minY;
-	MaxY = maxY;
-}
-
-Vector2 Clamps2::Minimum()
-{
-	return Vector2(MinX, MinY);
-}
-
-Vector2 Clamps2::Maximum()
-{
-	return Vector2(MaxX, MaxY);
-}
-
-Clamps2 Clamps2::NoClamps()
-{
-	return Clamps2(-FLT_MAX, FLT_MAX,
-				   -FLT_MAX, FLT_MAX);
-}
-
-#pragma endregion
-
-#pragma region Clamps3
-
-Clamps3::Clamps3(float minX, float maxX, float minY, float maxY, 
-				 float minZ, float maxZ)
-{
-	MinX = minX;
-	MaxX = maxX;
-	MinY = minY;
-	MaxY = maxY;
-	MinZ = minZ;
-	MaxZ = maxZ;
-}
-
-Vector3 Clamps3::Minimum()
-{
-	return Vector3(MinX, MinY, MinZ);
-}
-
-Vector3 Clamps3::Maximum()
-{
-	return Vector3(MaxX, MaxY, MaxZ);
-}
-
-Clamps3 Clamps3::NoClamps()
-{
-	return Clamps3(-FLT_MAX, FLT_MAX,
-				   -FLT_MAX, FLT_MAX,
-				   -FLT_MAX, FLT_MAX);
-}
-
-#pragma endregion
-
-#pragma region Clamps4
-
-Clamps4::Clamps4(float minX, float maxX, float minY, float maxY,
-				 float minZ, float maxZ, float minW, float maxW)
-{
-	MinX = minX;
-	MaxX = maxX;
-	MinY = minY;
-	MaxY = maxY;
-	MinZ = minZ;
-	MaxZ = maxZ;
-	MinW = minW;
-	MaxW = maxW;
-}
-
-Vector4 Clamps4::Minimum()
-{
-	return Vector4(MinX, MinY, MinZ, MinW);
-}
-
-Vector4 Clamps4::Maximum()
-{
-	return Vector4(MaxX, MaxY, MaxZ, MaxW);
-}
-
-Clamps4 Clamps4::NoClamps()
-{
-	return Clamps4(-FLT_MAX, FLT_MAX,
-				   -FLT_MAX, FLT_MAX,
-				   -FLT_MAX, FLT_MAX,
-				   -FLT_MAX, FLT_MAX);
-}
-
-#pragma endregion
-
 #pragma region Matrix2
 
 Matrix2::Matrix2(float r1c1, float r1c2, float r2c1, float r2c2)
@@ -551,16 +454,20 @@ Matrix2 Matrix2::Transpose()
 
 Matrix2 Matrix2::Inverse()
 {
-	float determinant = R1C1 * R2C2 - 
-						R1C2 * R2C1;
 	return Matrix2(R2C2, -R1C2,
-				   -R2C1, R1C1) * (1.0f / determinant);
+				   -R2C1, R1C1) * (1.0f / Determinant());
+}
+
+float Matrix2::Determinant()
+{
+	return R1C2 * R2C2 -
+		   R1C2 * R2C1;
 }
 
 Vector2 Matrix2::operator[](const int index) const
 {
-	return Vector2(*(&R1C1 + index * 2 + 0), 
-				   *(&R1C1 + index * 2 + 1));
+	return Vector2(*(&R1C1 + index * DIMENSION + 0),
+				   *(&R1C1 + index * DIMENSION + 1));
 }
 
 Matrix2 Matrix2::operator+(const Matrix2& rhs) const
@@ -585,6 +492,11 @@ Matrix2 Matrix2::operator*(const Matrix2& rhs) const
 {
 	return Matrix2(R1C1 * rhs.R1C1 + R1C2 * rhs.R2C1, R1C1 * rhs.R1C2 + R1C2 * rhs.R2C2,
 				   R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1, R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2);
+}
+
+float* Matrix2::operator[](const int index)
+{
+	return (&R1C1 + index * DIMENSION);
 }
 
 void Matrix2::operator+=(const Matrix2& rhs)
@@ -641,10 +553,6 @@ Matrix3 Matrix3::Transpose()
 
 Matrix3 Matrix3::Inverse() // SOMETHING'S OFF
 {
-	float determinent = R1C1 * (R2C2 * R3C3 - R2C3 * R3C2) - 
-						R1C2 * (R2C1 * R3C3 - R2C3 * R3C1) + 
-						R1C3 * (R2C1 * R3C2 - R2C2 * R3C1);
-
 	Matrix3 mat;
 	mat.R1C1 = R2C2 * R3C3 - R2C3 * R3C2;
 	mat.R1C2 = R1C3 * R3C2 - R1C2 * R3C3;
@@ -655,16 +563,23 @@ Matrix3 Matrix3::Inverse() // SOMETHING'S OFF
 	mat.R3C1 = R2C1 * R3C2 - R2C2 * R3C1;
 	mat.R3C2 = R1C2 * R3C1 - R1C1 * R3C2;
 	mat.R3C3 = R1C1 * R2C2 - R1C2 * R2C1;
-	mat *= (1.0f / determinent);
+	mat *= (1.0f / Determinant());
 
 	return mat;
 }
 
+float Matrix3::Determinant()
+{
+	return R1C1 * (R2C2 * R3C3 - R2C3 * R3C2) -
+		   R1C2 * (R2C1 * R3C3 - R2C3 * R3C1) +
+		   R1C3 * (R2C1 * R3C2 - R2C2 * R3C1);
+}
+
 Vector3 Matrix3::operator[](const int index) const
 {
-	return Vector3(*(&R1C1 + index * 3 + 0), 
-				   *(&R1C1 + index * 3 + 1),
-				   *(&R1C1 + index * 3 + 2));
+	return Vector3(*(&R1C1 + index * DIMENSION + 0),
+				   *(&R1C1 + index * DIMENSION + 1),
+				   *(&R1C1 + index * DIMENSION + 2));
 }
 
 Matrix3 Matrix3::operator+(const Matrix3& rhs) const
@@ -701,6 +616,11 @@ Matrix3 Matrix3::operator*(const Matrix3& rhs) const
 	mat.R3C2 = R3C1 * rhs.R1C2 + R3C2 * rhs.R2C2 + R3C3 * rhs.R3C2;
 	mat.R3C3 = R3C1 * rhs.R1C3 + R3C2 * rhs.R2C3 + R3C3 * rhs.R3C3;
 	return mat;
+}
+
+float* Matrix3::operator[](const int index)
+{
+	return (&R1C1 + index * DIMENSION);
 }
 
 void Matrix3::operator+=(const Matrix3& rhs)
@@ -774,12 +694,20 @@ Matrix4::Matrix4(float r1c1, float r1c2, float r1c3, float r1c4,
 	R4C1 = r4c1; R4C2 = r4c2; R4C3 = r4c3; R4C4 = r4c4;
 }
 
+Matrix4 Matrix4::Transpose()
+{
+	return Matrix4(R1C1, R2C1, R3C1, R4C1,
+				   R1C2, R2C2, R3C2, R4C2,
+				   R1C3, R2C3, R3C3, R4C3,
+				   R1C4, R2C4, R3C4, R4C4);
+}
+
 Vector4 Matrix4::operator[](const int index) const
 {
-	return Vector4(*(&R1C1 + index * 4 + 0), 
-				   *(&R1C1 + index * 4 + 1),
-				   *(&R1C1 + index * 4 + 2),
-				   *(&R1C1 + index * 4 + 3));
+	return Vector4(*(&R1C1 + index * DIMENSION + 0),
+				   *(&R1C1 + index * DIMENSION + 1),
+				   *(&R1C1 + index * DIMENSION + 2),
+				   *(&R1C1 + index * DIMENSION + 3));
 }
 
 Matrix4 Matrix4::operator+(const Matrix4& rhs) const
@@ -826,6 +754,11 @@ Matrix4 Matrix4::operator*(const Matrix4& rhs) const
 	mat.R4C3 = R4C1 * rhs.R1C3 + R4C2 * rhs.R2C3 + R4C3 * rhs.R3C3 + R4C4 * rhs.R4C3;
 	mat.R4C4 = R4C1 * rhs.R1C4 + R4C2 * rhs.R2C4 + R4C3 * rhs.R3C4 + R4C4 * rhs.R4C4;
 	return mat;
+}
+
+float* Matrix4::operator[](const int index)
+{
+	return (&R1C1 + index * DIMENSION);
 }
 
 void Matrix4::operator+=(const Matrix4& rhs)
@@ -898,6 +831,121 @@ Matrix4 Matrix4::Identity()
 
 #pragma endregion
 
+#pragma region Clamps1
+
+Clamps1::Clamps1(float min, float max)
+{
+	Min = min;
+	Max = max;
+}
+
+Vector2 Clamps1::MinMaxVector2()
+{
+	return Vector2(Min, Max);
+}
+
+Clamps1 Clamps1::NoClamps()
+{
+	return Clamps1(-FLT_MAX, FLT_MAX);
+}
+
+#pragma endregion
+
+#pragma region Clamps2
+
+Clamps2::Clamps2(float minX, float maxX, float minY, float maxY)
+{
+	MinX = minX;
+	MaxX = maxX;
+	MinY = minY;
+	MaxY = maxY;
+}
+
+Vector2 Clamps2::Minimum()
+{
+	return Vector2(MinX, MinY);
+}
+
+Vector2 Clamps2::Maximum()
+{
+	return Vector2(MaxX, MaxY);
+}
+
+Clamps2 Clamps2::NoClamps()
+{
+	return Clamps2(-FLT_MAX, FLT_MAX,
+		-FLT_MAX, FLT_MAX);
+}
+
+#pragma endregion
+
+#pragma region Clamps3
+
+Clamps3::Clamps3(float minX, float maxX, float minY, float maxY,
+	float minZ, float maxZ)
+{
+	MinX = minX;
+	MaxX = maxX;
+	MinY = minY;
+	MaxY = maxY;
+	MinZ = minZ;
+	MaxZ = maxZ;
+}
+
+Vector3 Clamps3::Minimum()
+{
+	return Vector3(MinX, MinY, MinZ);
+}
+
+Vector3 Clamps3::Maximum()
+{
+	return Vector3(MaxX, MaxY, MaxZ);
+}
+
+Clamps3 Clamps3::NoClamps()
+{
+	return Clamps3(-FLT_MAX, FLT_MAX,
+		-FLT_MAX, FLT_MAX,
+		-FLT_MAX, FLT_MAX);
+}
+
+#pragma endregion
+
+#pragma region Clamps4
+
+Clamps4::Clamps4(float minX, float maxX, float minY, float maxY,
+	float minZ, float maxZ, float minW, float maxW)
+{
+	MinX = minX;
+	MaxX = maxX;
+	MinY = minY;
+	MaxY = maxY;
+	MinZ = minZ;
+	MaxZ = maxZ;
+	MinW = minW;
+	MaxW = maxW;
+}
+
+Vector4 Clamps4::Minimum()
+{
+	return Vector4(MinX, MinY, MinZ, MinW);
+}
+
+Vector4 Clamps4::Maximum()
+{
+	return Vector4(MaxX, MaxY, MaxZ, MaxW);
+}
+
+Clamps4 Clamps4::NoClamps()
+{
+	return Clamps4(-FLT_MAX, FLT_MAX,
+		-FLT_MAX, FLT_MAX,
+		-FLT_MAX, FLT_MAX,
+		-FLT_MAX, FLT_MAX);
+}
+
+#pragma endregion
+
 #pragma region Quaternion
 
 Quaternion::Quaternion(float w, float x, float y, float z)
@@ -927,6 +975,39 @@ void Quaternion::Rotate(Vector3 axis, float fAngle)
 	*this *= Quaternion(wLocal, xLocal, yLocal, zLocal);
 }
 
+Vector3 Quaternion::GetRollPitchYaw() const
+{
+	Vector3 rpy;
+	float sqX = x * x;
+	float sqY = y * y;
+	float sqZ = z * z;
+	float sqW = w * w;
+
+	rpy.Y = asin(2.0f * (y * w - x * z));
+	if (PI / 2.0f - fabs(rpy.Y) > 1e-10)
+	{
+		rpy.X = atan2(2.0f * (x * w + y * z), sqW - sqX - sqY + sqZ);
+		rpy.Z = atan2(2.0f * (x * y + z * w), sqX - sqY - sqZ + sqW);
+	}
+	else
+	{
+		rpy.X = 0.0f;
+		rpy.Z = atan2(2.0f * y * z - 2.0f * x * w, 2.0f * x * z + 2.0f * y * w);
+
+		if (rpy.Y < 0.0f) rpy.Z = PI - rpy.Z;
+	}
+
+	return rpy;
+}
+
+Matrix4 Quaternion::GetRotationMatrix4() const
+{
+	return Matrix4(1.0f - 2*y*y - 2*z*z,	2*x*y - 2*w*z,			2*x*z + 2*w*y,			0,
+				   2*x*y + 2*w*z,			1.0f - 2*x*x - 2*z*z,	2*y*z - 2*w*x,			0,
+				   2*x*z - 2*w*y,			2*y*z + 2*w*x,			1.0f - 2*x*x - 2*y*y,	0,
+				   0,						0,						0,						1);
+}
+
 DirectX::XMMATRIX Quaternion::GetRotationMatrix() const
 {
 	/*
@@ -937,8 +1018,8 @@ DirectX::XMMATRIX Quaternion::GetRotationMatrix() const
 	*/
 	/* optimization for unit quaternions */
 	return DirectX::XMMATRIX(1.0f - 2*y*y - 2*z*z,	2*x*y - 2*w*z,			2*x*z + 2*w*y,			0,
-							 2*x*y + 2*w*z,			1.0f - 2*x*x - 2*z*z,	2*y*z + 2*w*x,			0,
-							 2*x*z - 2*w*y,			2*y*z - 2*w*x,			1.0f - 2*x*x - 2*y*y,	0,
+							 2*x*y + 2*w*z,			1.0f - 2*x*x - 2*z*z,	2*y*z - 2*w*x,			0,
+							 2*x*z - 2*w*y,			2*y*z + 2*w*x,			1.0f - 2*x*x - 2*y*y,	0,
 							 0,						0,						0,						1);
 }
 
