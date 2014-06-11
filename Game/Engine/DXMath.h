@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DXMath.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 6/03/2014
+// last edited 6/11/2014
 // ---------------------------------------------------------------------------
 
 #ifndef DX_MATH_H
@@ -13,13 +13,15 @@
 #define RadsToDegs 180.0f / PI
 
 // forward declerations
+class Vector3;
+class Vector4;
+class Matrix2;
+class Matrix3;
+class Matrix4;
 class Clamps1;
 class Clamps2;
 class Clamps3;
 class Clamps4;
-class Matrix2;
-class Matrix3;
-class Matrix4;
 
 class Vector2
 {
@@ -33,17 +35,20 @@ public:
 
 	static float Dot(Vector2 v1, Vector2 v2);
 
-	float operator[](const int index) const;
+	const float& operator[](const int index) const;
 	Vector2 operator-() const;
 	Vector2 operator+(const Vector2& rhs) const;
 	Vector2 operator-(const Vector2& rhs) const;
 	Vector2 operator*(const float& rhs) const;
 	Vector2 operator/(const float& rhs) const;
+	float& operator[](const int index);
 	void operator+=(const Vector2& rhs);
 	void operator-=(const Vector2& rhs);
 	void operator*=(const float& rhs);
 	void operator/=(const float& rhs);
 
+	operator Vector3();
+	operator Vector4();
 	operator DirectX::XMFLOAT2();
 	operator DirectX::XMFLOAT3();
 	operator DirectX::XMFLOAT4();
@@ -69,17 +74,21 @@ public:
 	static float Dot(Vector3 v1, Vector3 v2);
 	static Vector3 Cross(Vector3 v1, Vector3 v2);
 
-	float operator[](const int index) const;
+	const float& operator[](const int index) const;
 	Vector3 operator-() const;
 	Vector3 operator+(const Vector3& rhs) const;
 	Vector3 operator-(const Vector3& rhs) const;
 	Vector3 operator*(const float& rhs) const;
 	Vector3 operator/(const float& rhs) const;
+	float& operator[](const int index);
 	void operator+=(const Vector3& rhs);
 	void operator-=(const Vector3& rhs);
 	void operator*=(const float& rhs);
 	void operator/=(const float& rhs);
 
+	operator Vector2();
+	operator Vector4();
+	operator DirectX::XMFLOAT2();
 	operator DirectX::XMFLOAT3();
 	operator DirectX::XMFLOAT4();
 	operator DirectX::XMVECTOR();
@@ -104,17 +113,22 @@ public:
 
 	static float Dot(Vector4 v1, Vector4 v2);
 
-	float operator[](const int index) const;
+	const float& operator[](const int index) const;
 	Vector4 operator-() const;
 	Vector4 operator+(const Vector4& rhs) const;
 	Vector4 operator-(const Vector4& rhs) const;
 	Vector4 operator*(const float& rhs) const;
 	Vector4 operator/(const float& rhs) const;
+	float& operator[](const int index);
 	void operator+=(const Vector4& rhs);
 	void operator-=(const Vector4& rhs);
 	void operator*=(const float& rhs);
 	void operator/=(const float& rhs);
 
+	operator Vector2();
+	operator Vector3();
+	operator DirectX::XMFLOAT2();
+	operator DirectX::XMFLOAT3();
 	operator DirectX::XMFLOAT4();
 	operator DirectX::XMVECTOR();
 
@@ -137,12 +151,12 @@ public:
 	Matrix2 Inverse();
 	float Determinant();
 
-	Vector2 operator[](const int index) const;
+	const Vector2& operator[](const int index) const;
 	Matrix2 operator+(const Matrix2& rhs) const;
 	Matrix2 operator-(const Matrix2& rhs) const;
 	Matrix2 operator*(const float& rhs) const;
 	Matrix2 operator*(const Matrix2& rhs) const;
-	float* operator[](const int index);
+	Vector2& operator[](const int index);
 	void operator+=(const Matrix2& rhs);
 	void operator-=(const Matrix2& rhs);
 	void operator*=(const float& rhs);
@@ -167,12 +181,12 @@ public:
 	Matrix3 Inverse();
 	float Determinant();
 
-	Vector3 operator[](const int index) const;
+	const Vector3& operator[](const int index) const;
 	Matrix3 operator+(const Matrix3& rhs) const;
 	Matrix3 operator-(const Matrix3& rhs) const;
 	Matrix3 operator*(const float& rhs) const;
 	Matrix3 operator*(const Matrix3& rhs) const;
-	float* operator[](const int index);
+	Vector3& operator[](const int index);
 	void operator+=(const Matrix3& rhs);
 	void operator-=(const Matrix3& rhs);
 	void operator*=(const float& rhs);
@@ -198,16 +212,16 @@ public:
 			float r3c1 = 0.0f, float r3c2 = 0.0f, float r3c3 = 0.0f, float r3c4 = 0.0f,
 			float r4c1 = 0.0f, float r4c2 = 0.0f, float r4c3 = 0.0f, float r4c4 = 0.0f);
 
-	Matrix4 Transpose();
+	Matrix4 Transpose() const;
 	//Matrix4 Inverse();
 	//float Determinant();
 
-	Vector4 operator[](const int index) const;
+	const Vector4& operator[](const int index) const;
 	Matrix4 operator+(const Matrix4& rhs) const;
 	Matrix4 operator-(const Matrix4& rhs) const;
 	Matrix4 operator*(const float& rhs) const;
 	Matrix4 operator*(const Matrix4& rhs) const;
-	float* operator[](const int index);
+	Vector4& operator[](const int index);
 	void operator+=(const Matrix4& rhs);
 	void operator-=(const Matrix4& rhs);
 	void operator*=(const float& rhs);

@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/30/2014
+// last edited 6/11/2014
 // ---------------------------------------------------------------------------
 
 #include "Gameplay.h"
@@ -8,7 +8,13 @@
 Gameplay::Gameplay(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	: GameState(device, deviceContext)
 {
-	
+	camera = new Camera();
+	camera->FieldOfView = 0.25f * 3.1415926535f;
+	camera->NearPlane = 0.1f;
+	camera->FarPlane = 100.0f;
+	camera->SetAspectRatio(4.0f / 3.0f);
+
+	camera->Position = Vector3(0.0f, 0.0f, -5.0f);
 }
 
 Gameplay::~Gameplay()
@@ -17,6 +23,12 @@ Gameplay::~Gameplay()
 	{
 		delete crate;
 		crate = nullptr;
+	}
+
+	if (camera != nullptr)
+	{
+		delete camera;
+		camera = nullptr;
 	}
 }
 
@@ -66,24 +78,10 @@ bool Gameplay::Initialize()
 
 void Gameplay::Update(float dt)
 {
-	XMFLOAT4X4 worldMatrix, viewMatrix, projMatrix;
+	camera->Update(dt);
 
-	/* Per frame constant buffer data */
-	XMVECTOR position	= XMVectorSet(1, 1, -5, 0);
-	XMVECTOR target		= XMVectorSet(0, 0, 0, 0);
-	XMVECTOR up			= XMVectorSet(0, 1, 0, 0);
-	XMMATRIX V			= XMMatrixLookAtLH(position, target, up);
-	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V));
-
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.25f * 3.1415926535f,
-		4.0f / 3.0f,	// aspect ratio
-		0.1f,
-		100.0f);
-	XMStoreFloat4x4(&projMatrix, XMMatrixTranspose(P));
-
-	Game::perFrameData->view = viewMatrix;
-	Game::perFrameData->projection = projMatrix;
+	Game::perFrameData->view = camera->ViewMatrix;
+	Game::perFrameData->projection = camera->ProjMatrix;
 
 	deviceContext->UpdateSubresource(
 		Game::perFrameConstBuffer,

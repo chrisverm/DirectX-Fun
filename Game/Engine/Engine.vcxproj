@@ -103,6 +103,7 @@ copy "$(SolutionDir)Libraries\" "$(SolutionDir)Binary"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="DrawableEntity.h" />
     <ClInclude Include="DX.h" />
     <ClInclude Include="dxerr.h" />
@@ -118,6 +119,7 @@ copy "$(SolutionDir)Libraries\" "$(SolutionDir)Binary"</Command>
     <ClInclude Include="ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DrawableEntity.cpp" />
     <ClCompile Include="DX.cpp" />
     <ClCompile Include="dxerr.cpp" />

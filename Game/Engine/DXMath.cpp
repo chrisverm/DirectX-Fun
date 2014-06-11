@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DXMath.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 6/03/2014
+// last edited 6/11/2014
 // ---------------------------------------------------------------------------
 
 #include "DXMath.h"
@@ -37,7 +37,7 @@ float Vector2::Dot(Vector2 v1, Vector2 v2)
 	return v1.X * v2.X + v1.Y * v2.Y;
 }
 
-float Vector2::operator[](const int index) const
+const float& Vector2::operator[](const int index) const
 {
 	return *(&X + index);
 }
@@ -71,6 +71,11 @@ Vector2 Vector2::operator/(const float& rhs) const
 				   this->Y / rhs);
 }
 
+float& Vector2::operator[](const int index)
+{
+	return *(&X + index);
+}
+
 void Vector2::operator+=(const Vector2& rhs)
 {
 	this->X += rhs.X;
@@ -93,6 +98,16 @@ void Vector2::operator/=(const float& rhs)
 {
 	this->X /= rhs;
 	this->Y /= rhs;
+}
+
+Vector2::operator Vector3()
+{
+	return Vector3(X, Y, 0.0f);
+}
+
+Vector2::operator Vector4()
+{
+	return Vector4(X, Y, 0.0f, 0.0f);
 }
 
 Vector2::operator DirectX::XMFLOAT2()
@@ -190,7 +205,7 @@ Vector3 Vector3::Cross(Vector3 v1, Vector3 v2)
 				   v1.X * v2.Y - v1.Y * v2.X);
 }
 
-float Vector3::operator[](const int index) const
+const float& Vector3::operator[](const int index) const
 {
 	return *(&X + index);
 }
@@ -228,6 +243,11 @@ Vector3 Vector3::operator/(const float& rhs) const
 				   this->Z / rhs);
 }
 
+float& Vector3::operator[](const int index)
+{
+	return *(&X + index);
+}
+
 void Vector3::operator+=(const Vector3& rhs)
 {
 	this->X += rhs.X;
@@ -254,6 +274,21 @@ void Vector3::operator/=(const float& rhs)
 	this->X /= rhs;
 	this->Y /= rhs;
 	this->Z /= rhs;
+}
+
+Vector3::operator Vector2()
+{
+	return Vector2(X, Y);
+}
+
+Vector3::operator Vector4()
+{
+	return Vector4(X, Y, Z, 0.0f);
+}
+
+Vector3::operator DirectX::XMFLOAT2()
+{
+	return DirectX::XMFLOAT2(X, Y);
 }
 
 Vector3::operator DirectX::XMFLOAT3()
@@ -337,7 +372,7 @@ float Vector4::Dot(Vector4 v1, Vector4 v2)
 	return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z + v1.W * v2.W;
 }
 
-float Vector4::operator[](const int index) const
+const float& Vector4::operator[](const int index) const
 {
 	return *(&X + index);
 }
@@ -379,6 +414,11 @@ Vector4 Vector4::operator/(const float& rhs) const
 				   this->W / rhs);
 }
 
+float& Vector4::operator[](const int index)
+{
+	return *(&X + index);
+}
+
 void Vector4::operator+=(const Vector4& rhs)
 {
 	this->X += rhs.X;
@@ -409,6 +449,26 @@ void Vector4::operator/=(const float& rhs)
 	this->Y /= rhs;
 	this->Z /= rhs;
 	this->W /= rhs;
+}
+
+Vector4::operator Vector2()
+{
+	return Vector2(X, Y);
+}
+
+Vector4::operator Vector3()
+{
+	return Vector3(X, Y, Z);
+}
+
+Vector4::operator DirectX::XMFLOAT2()
+{
+	return DirectX::XMFLOAT2(X, Y);
+}
+
+Vector4::operator DirectX::XMFLOAT3()
+{
+	return DirectX::XMFLOAT3(X, Y, Z);
 }
 
 Vector4::operator DirectX::XMFLOAT4()
@@ -464,7 +524,7 @@ float Matrix2::Determinant()
 		   R1C2 * R2C1;
 }
 
-Vector2 Matrix2::operator[](const int index) const
+const Vector2& Matrix2::operator[](const int index) const
 {
 	return Vector2(*(&R1C1 + index * DIMENSION + 0),
 				   *(&R1C1 + index * DIMENSION + 1));
@@ -494,9 +554,9 @@ Matrix2 Matrix2::operator*(const Matrix2& rhs) const
 				   R2C1 * rhs.R1C1 + R2C2 * rhs.R2C1, R2C1 * rhs.R1C2 + R2C2 * rhs.R2C2);
 }
 
-float* Matrix2::operator[](const int index)
+Vector2& Matrix2::operator[](const int index)
 {
-	return (&R1C1 + index * DIMENSION);
+	return *(Vector2*)(&R1C1 + index * DIMENSION);
 }
 
 void Matrix2::operator+=(const Matrix2& rhs)
@@ -575,7 +635,7 @@ float Matrix3::Determinant()
 		   R1C3 * (R2C1 * R3C2 - R2C2 * R3C1);
 }
 
-Vector3 Matrix3::operator[](const int index) const
+const Vector3& Matrix3::operator[](const int index) const
 {
 	return Vector3(*(&R1C1 + index * DIMENSION + 0),
 				   *(&R1C1 + index * DIMENSION + 1),
@@ -618,9 +678,9 @@ Matrix3 Matrix3::operator*(const Matrix3& rhs) const
 	return mat;
 }
 
-float* Matrix3::operator[](const int index)
+Vector3& Matrix3::operator[](const int index)
 {
-	return (&R1C1 + index * DIMENSION);
+	return *(Vector3*)(&R1C1 + index * DIMENSION);
 }
 
 void Matrix3::operator+=(const Matrix3& rhs)
@@ -694,7 +754,7 @@ Matrix4::Matrix4(float r1c1, float r1c2, float r1c3, float r1c4,
 	R4C1 = r4c1; R4C2 = r4c2; R4C3 = r4c3; R4C4 = r4c4;
 }
 
-Matrix4 Matrix4::Transpose()
+Matrix4 Matrix4::Transpose() const
 {
 	return Matrix4(R1C1, R2C1, R3C1, R4C1,
 				   R1C2, R2C2, R3C2, R4C2,
@@ -702,7 +762,7 @@ Matrix4 Matrix4::Transpose()
 				   R1C4, R2C4, R3C4, R4C4);
 }
 
-Vector4 Matrix4::operator[](const int index) const
+const Vector4& Matrix4::operator[](const int index) const
 {
 	return Vector4(*(&R1C1 + index * DIMENSION + 0),
 				   *(&R1C1 + index * DIMENSION + 1),
@@ -756,9 +816,9 @@ Matrix4 Matrix4::operator*(const Matrix4& rhs) const
 	return mat;
 }
 
-float* Matrix4::operator[](const int index)
+Vector4& Matrix4::operator[](const int index)
 {
-	return (&R1C1 + index * DIMENSION);
+	return *(Vector4*)(&R1C1 + index * DIMENSION);
 }
 
 void Matrix4::operator+=(const Matrix4& rhs)

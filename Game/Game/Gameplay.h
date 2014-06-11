@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/30/2014
+// last edited 6/11/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAMEPLAY_H
@@ -13,6 +13,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Crate.h"
+#include "Camera.h"
 
 class Gameplay : public GameState
 {
@@ -26,6 +27,7 @@ public:
 
 private:
 	Crate* crate;
+	Camera* camera;
 
 };
 

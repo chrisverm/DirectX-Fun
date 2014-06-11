@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Entity.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/30/2014
+// last edited 6/11/2014
 // ---------------------------------------------------------------------------
 
 #ifndef ENTITY_H
@@ -26,7 +26,7 @@ public:
 	bool AttachTo(Entity* parent, bool applyParentMatrix = true);
 
 protected:
-	XMFLOAT4X4 worldMatrix;
+	Matrix4 worldMatrix;
 
 	ID3D11Buffer* modelConstBuffer;
 

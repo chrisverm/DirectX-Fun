@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Entity.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/30/2014
+// last edited 6/11/2014
 // ---------------------------------------------------------------------------
 
 #include "Entity.h"
@@ -28,12 +28,10 @@ void Entity::Initialize(ID3D11Buffer* modelConstBuffer)
 
 void Entity::Update(float dt)
 {
-	XMMATRIX trans  = XMMatrixTranslationFromVector(Position);
-	XMMATRIX rot	= XMMatrixRotationQuaternion(Orientation);
-	XMMATRIX sca	= XMMatrixScalingFromVector(Scale);
-	XMMATRIX world	= sca * rot * trans;
-
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(world));
+	Matrix4 trans = Position.GetTranslationMatrix4();
+	Matrix4 rot = Orientation.GetRotationMatrix4();//.Transpose();
+	Matrix4 sca = Scale.GetScaleMatrix4();
+	worldMatrix = (trans * sca * rot);// .Transpose();
 }
 
 void Entity::SetConstantBuffer(ID3D11DeviceContext* deviceContext, void* data)
