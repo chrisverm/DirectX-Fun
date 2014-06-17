@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 6/11/2014
+// last edited 6/17/2014
 // ---------------------------------------------------------------------------
 
 #include "Gameplay.h"
@@ -8,13 +8,12 @@
 Gameplay::Gameplay(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	: GameState(device, deviceContext)
 {
-	camera = new Camera();
+	Camera* camera = new Camera();
 	camera->FieldOfView = 0.25f * 3.1415926535f;
 	camera->NearPlane = 0.1f;
 	camera->FarPlane = 100.0f;
-	camera->SetAspectRatio(4.0f / 3.0f);
-
 	camera->Position = Vector3(0.0f, 0.0f, -5.0f);
+	CameraManager::AddNewCamera(camera, true);
 }
 
 Gameplay::~Gameplay()
@@ -23,12 +22,6 @@ Gameplay::~Gameplay()
 	{
 		delete crate;
 		crate = nullptr;
-	}
-
-	if (camera != nullptr)
-	{
-		delete camera;
-		camera = nullptr;
 	}
 }
 
@@ -78,10 +71,8 @@ bool Gameplay::Initialize()
 
 void Gameplay::Update(float dt)
 {
-	camera->Update(dt);
-
-	Game::perFrameData->view = camera->ViewMatrix;
-	Game::perFrameData->projection = camera->ProjMatrix;
+	Game::perFrameData->view = CameraManager::ActiveCamera()->ViewMatrix;
+	Game::perFrameData->projection = CameraManager::ActiveCamera()->ProjMatrix;
 
 	deviceContext->UpdateSubresource(
 		Game::perFrameConstBuffer,

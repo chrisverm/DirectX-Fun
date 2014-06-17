@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DX.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/02/2014
+// last edited 6/17/2014
 // ---------------------------------------------------------------------------
 
 #include "DX.h"
@@ -24,6 +24,7 @@ bool DX::gamePaused = false;
 bool DX::minimized = false;
 bool DX::maximized = false;
 bool DX::resizing = false;
+bool DX::resized = false;
 
 std::wstring DX::windowCaption = L"DirectX Game";
 int DX::windowWidth = 800;
@@ -56,6 +57,7 @@ void DX::Release()
 	ReleaseMacro(deviceContext);
 	ReleaseMacro(device);
 
+	CameraManager::Release();
 	GameStateManager::Release();
 }
 
@@ -270,6 +272,8 @@ void DX::OnResize()
 	viewport.MinDepth	= 0.0f;
 	viewport.MaxDepth	= 1.0f;
 	deviceContext->RSSetViewports(1, &viewport);
+
+	resized = true;
 }
 
 void DX::PreUpdate()
@@ -279,7 +283,7 @@ void DX::PreUpdate()
 
 void DX::PostUpdate()
 {
-
+	//resized = false;
 }
 
 LRESULT DX::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

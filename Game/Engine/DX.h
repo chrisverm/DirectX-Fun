@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // DX.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/02/2014
+// last edited 6/17/2014
 // ---------------------------------------------------------------------------
 
 #ifndef DX_H
@@ -12,6 +12,7 @@
 #include "GameTimer.h"
 
 #include "GameStateManager.h"
+#include "CameraManager.h"
 
 class DX
 {
@@ -50,6 +51,7 @@ protected:
 	static bool minimized;
 	static bool maximized;
 	static bool resizing;
+	static bool resized;
 
 	static std::wstring windowCaption;
 	static int windowWidth;

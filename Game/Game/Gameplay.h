@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Gameplay.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 6/11/2014
+// last edited 6/17/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAMEPLAY_H
@@ -27,7 +27,6 @@ public:
 
 private:
 	Crate* crate;
-	Camera* camera;
 
 };
 

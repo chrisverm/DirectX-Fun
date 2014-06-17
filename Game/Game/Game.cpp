@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Game.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/11/2014
+// last edited 5/17/2014
 // ---------------------------------------------------------------------------
 
 #include "Game.h"
@@ -51,6 +51,8 @@ bool Game::Initialize(HINSTANCE hInstance, int icon)
 		return false;
 
 	CreateConstantBuffers();
+
+	CameraManager::Initialize(deviceContext, &windowWidth, &windowHeight, &resized);
 
 	Gameplay* gameplay = new Gameplay(device, deviceContext);
 	GameStateManager::AddState("Gameplay", gameplay);
@@ -120,11 +122,6 @@ void Game::CreateConstantBuffers()
 		&perModelConstBuffer));
 }
 
-void Game::OnResize()
-{
-	DX::OnResize();
-}
-
 int Game::Run()
 {
 	MSG msg = {0};
@@ -170,6 +167,8 @@ int Game::Run()
 
 void Game::Update(float dt)
 {
+	CameraManager::Update(dt);
+
 	(*GameStateManager::CurrentState)->Update(dt);
 }
 

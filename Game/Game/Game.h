@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Game.h by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 5/11/2014
+// last edited 5/17/2014
 // ---------------------------------------------------------------------------
 
 #ifndef GAME_H
@@ -13,6 +13,7 @@
 #include "ConstantBuffers.h"
 #include "GameStateManager.h"
 #include "Gameplay.h"
+#include "CameraManager.h"
 
 class Game : public DX
 {
@@ -27,7 +28,6 @@ public:
 
 	static bool Initialize(HINSTANCE hInstance, int icon);
 	static void CreateConstantBuffers();
-	static void OnResize();
 	static void Update(float dt);
 	static void Draw(float dt);
 

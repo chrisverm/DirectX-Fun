@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Camera.cpp by Christopher Vermilya (C) 2014 All Rights Reserved.
-// last edited 6/11/2014
+// last edited 6/17/2014
 // ---------------------------------------------------------------------------
 
 #include "Camera.h"
@@ -17,9 +17,6 @@ void Camera::Update(float dt)
 	Entity::Update(dt);
 
 	// clamp rotation angles
-
-	SetProjMatrix();
-	SetViewMatrix();
 }
 
 void Camera::SetAspectRatio(float ratio)
